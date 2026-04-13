@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "author": {
     "name": "Butterbase",
-    "email": "support@butterbase.ai"
+    "email": "ken@butterbase.ai"
   },
   "homepage": "https://butterbase.ai",
-  "repository": "https://github.com/butterbase/butterbase-plugin",
+  "repository": "https://github.com/NetGPT-Inc/butterbase-plugin",
   "license": "MIT",
   "keywords": ["butterbase", "baas", "backend", "mcp", "database", "auth", "storage"]
 }

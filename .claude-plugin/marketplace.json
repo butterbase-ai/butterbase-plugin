@@ -3,7 +3,7 @@
   "description": "Butterbase plugin marketplace",
   "owner": {
     "name": "Butterbase",
-    "email": "support@butterbase.ai"
+    "email": "ken@butterbase.ai"
   },
   "plugins": [
     {
@@ -13,7 +13,7 @@
       "source": "./",
       "author": {
         "name": "Butterbase",
-        "email": "support@butterbase.ai"
+        "email": "ken@butterbase.ai"
       }
     }
   ]
