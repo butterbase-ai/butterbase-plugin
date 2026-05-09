@@ -7,6 +7,8 @@ description: Use when building a new Butterbase app from scratch, creating a ful
 
 This skill walks through all seven phases of building a production-ready Butterbase application — from provisioning a backend to deploying a live frontend. Follow each phase in order; later phases depend on artifacts (app_id, schema, RLS policies) produced by earlier ones.
 
+> **Convention:** every JSON body below is the argument object for the tool named in its **Tool:** header. When the header reads `manage_schema` with `action: "apply"`, include `"action": "apply"` alongside the other fields when you make the call.
+
 ---
 
 ## Phase 1: Create the App
@@ -35,7 +37,7 @@ Use `init_app` to provision an isolated backend with its own database and auto-g
 
 If the user needs programmatic access (CI/CD pipelines, server-to-server calls, admin scripts), generate a service key now.
 
-**Tool:** `generate_service_key`
+**Tool:** `manage_auth_config` with `action: "generate_service_key"`
 
 ```json
 {
@@ -60,7 +62,7 @@ Work with the user to understand their data model before writing any SQL. Ask:
 
 Always preview schema changes before applying them.
 
-**Tool:** `dry_run_schema`
+**Tool:** `manage_schema` with `action: "dry_run"`
 
 ```json
 {
@@ -83,7 +85,7 @@ Review the generated SQL — make sure it matches intent before applying.
 
 ### Apply the Schema
 
-**Tool:** `apply_schema`
+**Tool:** `manage_schema` with `action: "apply"`
 
 Below is a complete example for a **blog app** with posts and comments:
 
@@ -118,7 +120,7 @@ Below is a complete example for a **blog app** with posts and comments:
 
 ### Verify the Schema Was Applied
 
-**Tool:** `get_schema`
+**Tool:** `manage_schema` with `action: "get"`
 
 ```json
 {
@@ -134,7 +136,7 @@ Confirm every table and column is present before moving to Phase 3.
 - Always include `created_at` with `now()` default
 - Use `author_id` / `user_id` UUID columns on user-owned tables — RLS will reference these
 - Use `references: "table.column"` for foreign keys (cascades must be set carefully)
-- `apply_schema` is idempotent — safe to call again if schema is unchanged
+- `manage_schema` action `apply` is idempotent — safe to call again if schema is unchanged
 
 ---
 
@@ -150,7 +152,7 @@ Call `create_user_isolation_policy` for each user-owned table. This single call:
 3. Installs a BEFORE INSERT trigger to auto-populate the user column
 4. Creates a service bypass policy for admin access
 
-**Tool:** `create_user_isolation_policy`
+**Tool:** `manage_rls` with `action: "create_user_isolation"`
 
 ```json
 {
@@ -232,7 +234,7 @@ Confirm the returned row has `author_id` set to `11111111-1111-1111-1111-1111111
 
 ### Verify All Policies
 
-**Tool:** `get_rls_policies`
+**Tool:** `manage_rls` with `action: "list"`
 
 ```json
 {
@@ -252,7 +254,7 @@ Butterbase uses OAuth 2.0 for end-user authentication. Users sign in via a provi
 
 Built-in providers (google, github, discord, facebook, linkedin, microsoft, apple, x) only require three fields — URLs and scopes are auto-filled.
 
-**Tool:** `configure_oauth_provider`
+**Tool:** `manage_oauth` with `action: "configure"`
 
 **Google example:**
 ```json
@@ -321,7 +323,7 @@ const posts = await client.from('posts').select('*')
 
 ### Adjust JWT Token Lifetimes (Optional)
 
-**Tool:** `update_jwt_config`
+**Tool:** `manage_auth_config` with `action: "update_jwt"`
 
 ```json
 {
@@ -400,7 +402,7 @@ Never hardcode API keys. Pass them as `envVars`:
 }
 ```
 
-To rotate secrets without redeploying code, use `update_function_env`.
+To rotate secrets without redeploying code, call `manage_function` with `action: "update_env"`.
 
 ### Test a Function
 
@@ -422,7 +424,7 @@ To rotate secrets without redeploying code, use `update_function_env`.
 
 If a function returns an unexpected response or error, check logs immediately.
 
-**Tool:** `get_function_logs`
+**Tool:** `manage_function` with `action: "get_logs"`
 
 ```json
 {
@@ -453,7 +455,7 @@ Deploy the frontend as a static site. Butterbase hosts it on a CDN with SPA rout
 
 Allow the frontend domain to call the API.
 
-**Tool:** `update_cors`
+**Tool:** `manage_app` with `action: "update_cors"`
 
 ```json
 {
@@ -469,7 +471,7 @@ Add both local dev and production URLs. Update again after you know the final de
 
 ### Step 2: Set Frontend Environment Variables
 
-**Tool:** `set_frontend_env`
+**Tool:** `manage_frontend` with `action: "set_env"`
 
 ```json
 {
@@ -537,7 +539,7 @@ Replace the URL with the `uploadUrl` returned in the previous step.
 
 ### Step 6: Start the Deployment
 
-**Tool:** `start_frontend_deployment`
+**Tool:** `manage_frontend` with `action: "start_deployment"`
 
 ```json
 {
@@ -588,15 +590,15 @@ Once you have the live deployment URL, add it to CORS if it wasn't already inclu
 Before announcing the app as production-ready, verify each item:
 
 - [ ] **1. CORS configured for production domain** — `update_cors` includes the live frontend URL (not just localhost)
-- [ ] **2. RLS enabled on all user-data tables** — `get_rls_policies` shows policies for every table holding user-generated content; no table is accidentally wide-open
+- [ ] **2. RLS enabled on all user-data tables** — `manage_rls` (`action: "list"`) shows policies for every table holding user-generated content; no table is accidentally wide-open
 - [ ] **3. OAuth redirect URIs point to production** — Provider developer consoles have the Butterbase callback URL registered; no localhost URIs are the only option in production
 - [ ] **4. Frontend env vars set for production API URL** — `VITE_API_BASE` (or equivalent) points to `https://api.butterbase.ai/v1/{app_id}`, not a localhost URL
 - [ ] **5. Error handling in all functions** — Every `deploy_function` handler returns appropriate HTTP status codes (400 for bad input, 401 for auth failures, 500 for unexpected errors) rather than throwing unhandled exceptions
-- [ ] **6. JWT config reviewed** — `update_jwt_config` has been called with intentional token lifetimes; access token TTL is appropriate for the security sensitivity of the app (default 15m is reasonable)
-- [ ] **7. Storage quotas checked** — `get_storage_objects` and app config reviewed; storage usage is within plan limits and `allowedContentTypes` are restricted to what the app actually needs
-- [ ] **8. Functions tested with invoke_function** — Every HTTP function has been invoked with realistic payloads and edge cases (missing fields, invalid auth, large inputs) and returned correct responses
-- [ ] **9. Frontend deployed and verified** — `list_frontend_deployments` shows a `READY` deployment; the live URL loads correctly in a browser and all API calls succeed
-- [ ] **10. Monitoring and audit logs reviewed** — `query_audit_logs` shows no unexpected login failures or suspicious activity; `get_function_logs` shows no recurring errors in production traffic
+- [ ] **6. JWT config reviewed** — `manage_auth_config` (`action: "update_jwt"`) has been called with intentional token lifetimes; access token TTL is appropriate for the security sensitivity of the app (default 15m is reasonable)
+- [ ] **7. Storage quotas checked** — `manage_storage` (`action: "list"`) and app config reviewed; storage usage is within plan limits and `allowedContentTypes` are restricted to what the app actually needs
+- [ ] **8. Functions tested with `invoke_function`** — Every HTTP function has been invoked with realistic payloads and edge cases (missing fields, invalid auth, large inputs) and returned correct responses
+- [ ] **9. Frontend deployed and verified** — `manage_frontend` (`action: "list_deployments"`) shows a `READY` deployment; the live URL loads correctly in a browser and all API calls succeed
+- [ ] **10. Monitoring and audit logs reviewed** — `query_audit_logs` shows no unexpected login failures or suspicious activity; `manage_function` (`action: "get_logs"`) shows no recurring errors in production traffic
 
 ---
 
@@ -604,24 +606,24 @@ Before announcing the app as production-ready, verify each item:
 
 | Phase | Tools Used |
 |---|---|
-| 1 — Create App | `init_app`, `generate_service_key` |
-| 2 — Schema | `dry_run_schema`, `apply_schema`, `get_schema` |
-| 3 — RLS | `create_user_isolation_policy`, `create_policy`, `enable_rls`, `get_rls_policies`, `select_rows`, `insert_row` |
-| 4 — Auth | `configure_oauth_provider`, `update_jwt_config` |
-| 5 — Functions | `deploy_function`, `update_function_env`, `invoke_function`, `get_function_logs` |
-| 6 — Frontend | `update_cors`, `set_frontend_env`, `create_frontend_deployment`, `start_frontend_deployment`, `list_frontend_deployments` |
-| 7 — Production | `get_rls_policies`, `query_audit_logs`, `get_function_logs`, `get_storage_objects` |
+| 1 — Create App | `init_app`, `manage_auth_config` (`generate_service_key`) |
+| 2 — Schema | `manage_schema` (`dry_run`, `apply`, `get`) |
+| 3 — RLS | `manage_rls` (`create_user_isolation`, `create_policy`, `enable`, `list`), `select_rows`, `insert_row` |
+| 4 — Auth | `manage_oauth` (`configure`), `manage_auth_config` (`update_jwt`) |
+| 5 — Functions | `deploy_function`, `invoke_function`, `manage_function` (`update_env`, `get_logs`, `list`, `delete`) |
+| 6 — Frontend | `manage_app` (`update_cors`), `manage_frontend` (`set_env`, `start_deployment`, `list_deployments`), `create_frontend_deployment` |
+| 7 — Production | `manage_rls` (`list`), `query_audit_logs`, `manage_function` (`get_logs`), `manage_storage` (`list`) |
 
 ---
 
 ## Common Mistakes to Avoid
 
 **Schema**
-- Do not drop and recreate tables to rename a column — use `apply_schema` with the new column name and migrate data separately
-- Do not skip `dry_run_schema` — always preview before applying
+- Do not drop and recreate tables to rename a column — use `manage_schema` (`action: "apply"`) with the new column name and migrate data separately
+- Do not skip `action: "dry_run"` — always preview before applying
 
 **RLS**
-- Do not forget to call `create_user_isolation_policy` — a table without RLS is readable by all authenticated users
+- Do not forget `manage_rls` (`action: "create_user_isolation"`) — a table without RLS is readable by all authenticated users
 - Do not include `author_id` / `user_id` in INSERT bodies when a trigger is installed — it will be set automatically
 
 **Functions**

@@ -11,13 +11,23 @@ Reference guide for Butterbase's declarative schema DSL. Covers column types, co
 
 ## 1. Overview
 
-Butterbase uses a **declarative schema DSL** — you describe the desired end state of your database, and the platform computes and applies the diff. You never write raw `ALTER TABLE` or `CREATE TABLE` SQL. Instead, call `apply_schema` with a JSON payload describing your tables, columns, and indexes.
+Butterbase uses a **declarative schema DSL** — you describe the desired end state of your database, and the platform computes and applies the diff. You never write raw `ALTER TABLE` or `CREATE TABLE` SQL. Instead, call `manage_schema` with `action: "apply"` and a JSON payload describing your tables, columns, and indexes.
+
+The single `manage_schema` tool exposes four actions:
+
+| Action | Purpose |
+|--------|---------|
+| `"get"` | Read the current schema |
+| `"dry_run"` | Preview SQL that `apply` would execute, without running it |
+| `"apply"` | Apply a declarative schema (diffs against current, runs safe DDL) |
+| `"list_migrations"` | List applied migrations, most recent first |
 
 Key principles:
-- **Idempotent**: applying the same schema twice is safe
+- **Idempotent**: applying the same schema twice is safe — returns "Schema is up to date" if no changes needed
 - **Additive by default**: new columns and tables are created automatically
 - **Explicit drops**: destructive operations require opt-in via `_drop` / `_dropColumns`
-- **Preview first**: use `dry_run_schema` to see what will change before committing
+- **Preview first**: use `action: "dry_run"` to see what will change before committing
+- **Transactional**: each migration runs in a single transaction — all changes commit or all roll back
 
 ---
 
@@ -34,7 +44,7 @@ Key principles:
 | `jsonb` | JSONB | Structured/semi-structured data |
 | `real` | REAL | 32-bit floating point |
 | `double precision` | DOUBLE PRECISION | 64-bit floating point |
-| `vector(N)` | VECTOR(N) | Embeddings (pgvector) |
+| `vector(N)` | VECTOR(N) | Embeddings (pgvector); e.g. `vector(1536)` for OpenAI |
 
 > **Always use `timestamptz` instead of `timestamp`.** `timestamp` silently drops timezone info and causes subtle bugs with users in different time zones.
 
@@ -51,7 +61,32 @@ Each column is an object with the following properties:
 | `nullable` | boolean | no | true | Allow NULL values |
 | `default` | string | no | — | SQL expression for default value |
 | `unique` | boolean | no | false | Add unique constraint |
-| `references` | string | no | — | Foreign key target: `"table.column"` |
+| `references` | string \| object | no | — | Foreign key target (see below) |
+
+### Foreign keys — short or long form
+
+Short form (just the target):
+
+```json
+"author_id": { "type": "uuid", "nullable": false, "references": "users.id" }
+```
+
+Long form (with cascade behavior):
+
+```json
+"author_id": {
+  "type": "uuid",
+  "nullable": false,
+  "references": {
+    "table": "users",
+    "column": "id",
+    "onDelete": "CASCADE",
+    "onUpdate": "NO ACTION"
+  }
+}
+```
+
+`onDelete` / `onUpdate` accept `CASCADE | SET NULL | SET DEFAULT | RESTRICT | NO ACTION` (default `NO ACTION`).
 
 ### Default expressions
 
@@ -63,16 +98,6 @@ Pass SQL expressions as strings:
 "default": "false"               // Booleans
 "default": "0"                   // Integers
 "default": "'draft'"             // String literals (single-quoted)
-```
-
-### Foreign keys
-
-```json
-"author_id": {
-  "type": "uuid",
-  "nullable": false,
-  "references": "users.id"
-}
 ```
 
 ---
@@ -101,8 +126,8 @@ If your app uses Row-Level Security (RLS), also add:
 
 ## 5. Index Types
 
-| Type | Use case | Example opclass |
-|------|----------|----------------|
+| `method` | Use case | Example opclass |
+|----------|----------|----------------|
 | `btree` | Default, range queries, sorting | — |
 | `hash` | Exact-match lookups | — |
 | `gin` | Full-text search on JSONB, arrays | `jsonb_path_ops` |
@@ -119,16 +144,16 @@ Indexes are defined per-table under the `indexes` key:
   "indexes": {
     "idx_posts_author": {
       "columns": ["author_id"],
-      "type": "btree"
+      "method": "btree"
     },
     "idx_posts_embedding": {
       "columns": ["embedding"],
-      "type": "hnsw",
+      "method": "hnsw",
       "opclass": "vector_cosine_ops"
     },
     "idx_posts_content_search": {
       "columns": ["content"],
-      "type": "gin"
+      "method": "gin"
     }
   }
 }
@@ -141,26 +166,35 @@ Index naming convention: `idx_{table}_{column(s)}` — e.g. `idx_orders_user_id`
 ```json
 "idx_members_workspace_user": {
   "columns": ["workspace_id", "user_id"],
-  "type": "btree",
+  "method": "btree",
   "unique": true
 }
 ```
 
 ---
 
-## 6. Using `apply_schema`
+## 6. Using `manage_schema`
+
+All schema operations go through one tool with an `action` parameter:
+
+```js
+manage_schema({ app_id, action: "get" })
+manage_schema({ app_id, action: "dry_run", schema })
+manage_schema({ app_id, action: "apply", schema, name })   // name is optional
+manage_schema({ app_id, action: "list_migrations" })
+```
 
 ### Creating new tables
 
-Simply include the table definition in your schema payload. The platform creates it if it does not exist.
+Include the table definition in your `schema` payload and call `action: "apply"`. The platform creates the table if it doesn't exist.
 
 ### Adding columns to existing tables
 
-Add the new column(s) to the existing table definition and call `apply_schema`. Existing rows receive the column's `default` value (or NULL if no default).
+Add the new column(s) to the existing table definition and call `action: "apply"`. Existing rows receive the column's `default` value (or NULL if no default).
 
 ### Destructive operations
 
-Dropping tables and columns is opt-in and explicit:
+Dropping tables and columns is opt-in and explicit. Without `_drop` / `_dropColumns`, the platform refuses with `STATE_PREREQUISITE_MISSING`.
 
 ```json
 {
@@ -183,17 +217,28 @@ Dropping columns from a specific table:
 }
 ```
 
-> ⚠️ Drops are irreversible. Always run `dry_run_schema` first.
+> ⚠️ Drops are irreversible. Always run `action: "dry_run"` first.
 
-### Preview with `dry_run_schema`
+### Preview before commit
 
-Use the same payload with `dry_run_schema` to see a diff of what will be created, altered, or dropped — without touching the database:
+Use the same payload with `action: "dry_run"` to see the SQL that `apply` would execute — without touching the database:
 
-```json
-// Same payload, different tool:
-// dry_run_schema({ appId, schema }) — preview only
-// apply_schema({ appId, schema })  — commits changes
+```js
+// Preview only:
+manage_schema({ app_id, action: "dry_run", schema })
+
+// Commit:
+manage_schema({ app_id, action: "apply", schema, name: "add_posts_table" })
 ```
+
+### Common errors
+
+| Code | Meaning |
+|------|---------|
+| `VALIDATION_INVALID_SCHEMA` | Schema format doesn't match the DSL |
+| `STATE_PREREQUISITE_MISSING` | Destructive op without `_drop` / `_dropColumns` |
+| `QUOTA_TABLE_LIMIT` | Exceeds the per-app table limit |
+| `RESOURCE_NOT_FOUND` | `app_id` does not exist |
 
 ---
 
@@ -203,7 +248,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
 
 ```json
 {
-  "appId": "YOUR_APP_ID",
+  "app_id": "YOUR_APP_ID",
+  "action": "apply",
   "schema": {
     "users": {
       "columns": {
@@ -215,7 +261,7 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_users_email": { "columns": ["email"], "type": "btree", "unique": true }
+        "idx_users_email": { "columns": ["email"], "method": "btree", "unique": true }
       }
     },
     "categories": {
@@ -242,10 +288,10 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_posts_author_id": { "columns": ["author_id"], "type": "btree" },
-        "idx_posts_category_id": { "columns": ["category_id"], "type": "btree" },
-        "idx_posts_slug": { "columns": ["slug"], "type": "btree", "unique": true },
-        "idx_posts_published": { "columns": ["published", "published_at"], "type": "btree" }
+        "idx_posts_author_id": { "columns": ["author_id"], "method": "btree" },
+        "idx_posts_category_id": { "columns": ["category_id"], "method": "btree" },
+        "idx_posts_slug": { "columns": ["slug"], "method": "btree", "unique": true },
+        "idx_posts_published": { "columns": ["published", "published_at"], "method": "btree" }
       }
     },
     "comments": {
@@ -258,8 +304,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_comments_post_id": { "columns": ["post_id"], "type": "btree" },
-        "idx_comments_author_id": { "columns": ["author_id"], "type": "btree" }
+        "idx_comments_post_id": { "columns": ["post_id"], "method": "btree" },
+        "idx_comments_author_id": { "columns": ["author_id"], "method": "btree" }
       }
     }
   }
@@ -272,7 +318,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
 
 ```json
 {
-  "appId": "YOUR_APP_ID",
+  "app_id": "YOUR_APP_ID",
+  "action": "apply",
   "schema": {
     "products": {
       "columns": {
@@ -287,8 +334,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_products_sku": { "columns": ["sku"], "type": "btree", "unique": true },
-        "idx_products_metadata": { "columns": ["metadata"], "type": "gin", "opclass": "jsonb_path_ops" }
+        "idx_products_sku": { "columns": ["sku"], "method": "btree", "unique": true },
+        "idx_products_metadata": { "columns": ["metadata"], "method": "gin", "opclass": "jsonb_path_ops" }
       }
     },
     "orders": {
@@ -302,8 +349,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_orders_user_id": { "columns": ["user_id"], "type": "btree" },
-        "idx_orders_status": { "columns": ["status"], "type": "btree" }
+        "idx_orders_user_id": { "columns": ["user_id"], "method": "btree" },
+        "idx_orders_status": { "columns": ["status"], "method": "btree" }
       }
     },
     "order_items": {
@@ -317,8 +364,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_order_items_order_id": { "columns": ["order_id"], "type": "btree" },
-        "idx_order_items_product_id": { "columns": ["product_id"], "type": "btree" }
+        "idx_order_items_order_id": { "columns": ["order_id"], "method": "btree" },
+        "idx_order_items_product_id": { "columns": ["product_id"], "method": "btree" }
       }
     },
     "reviews": {
@@ -333,8 +380,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_reviews_product_id": { "columns": ["product_id"], "type": "btree" },
-        "idx_reviews_user_id": { "columns": ["user_id"], "type": "btree" }
+        "idx_reviews_product_id": { "columns": ["product_id"], "method": "btree" },
+        "idx_reviews_user_id": { "columns": ["user_id"], "method": "btree" }
       }
     }
   }
@@ -347,7 +394,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
 
 ```json
 {
-  "appId": "YOUR_APP_ID",
+  "app_id": "YOUR_APP_ID",
+  "action": "apply",
   "schema": {
     "workspaces": {
       "columns": {
@@ -360,7 +408,7 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_workspaces_slug": { "columns": ["slug"], "type": "btree", "unique": true }
+        "idx_workspaces_slug": { "columns": ["slug"], "method": "btree", "unique": true }
       }
     },
     "members": {
@@ -373,8 +421,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_members_workspace_user": { "columns": ["workspace_id", "user_id"], "type": "btree", "unique": true },
-        "idx_members_user_id": { "columns": ["user_id"], "type": "btree" }
+        "idx_members_workspace_user": { "columns": ["workspace_id", "user_id"], "method": "btree", "unique": true },
+        "idx_members_user_id": { "columns": ["user_id"], "method": "btree" }
       }
     },
     "projects": {
@@ -388,7 +436,7 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_projects_workspace_id": { "columns": ["workspace_id"], "type": "btree" }
+        "idx_projects_workspace_id": { "columns": ["workspace_id"], "method": "btree" }
       }
     },
     "tasks": {
@@ -405,9 +453,9 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_tasks_project_id": { "columns": ["project_id"], "type": "btree" },
-        "idx_tasks_assignee_id": { "columns": ["assignee_id"], "type": "btree" },
-        "idx_tasks_status": { "columns": ["status"], "type": "btree" }
+        "idx_tasks_project_id": { "columns": ["project_id"], "method": "btree" },
+        "idx_tasks_assignee_id": { "columns": ["assignee_id"], "method": "btree" },
+        "idx_tasks_status": { "columns": ["status"], "method": "btree" }
       }
     }
   }
@@ -420,7 +468,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
 
 ```json
 {
-  "appId": "YOUR_APP_ID",
+  "app_id": "YOUR_APP_ID",
+  "action": "apply",
   "schema": {
     "profiles": {
       "columns": {
@@ -433,8 +482,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_profiles_username": { "columns": ["username"], "type": "btree", "unique": true },
-        "idx_profiles_user_id": { "columns": ["user_id"], "type": "btree", "unique": true }
+        "idx_profiles_username": { "columns": ["username"], "method": "btree", "unique": true },
+        "idx_profiles_user_id": { "columns": ["user_id"], "method": "btree", "unique": true }
       }
     },
     "posts": {
@@ -447,8 +496,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "updated_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_posts_author_id": { "columns": ["author_id"], "type": "btree" },
-        "idx_posts_created_at": { "columns": ["created_at"], "type": "btree" }
+        "idx_posts_author_id": { "columns": ["author_id"], "method": "btree" },
+        "idx_posts_created_at": { "columns": ["created_at"], "method": "btree" }
       }
     },
     "follows": {
@@ -459,8 +508,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "created_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_follows_follower_following": { "columns": ["follower_id", "following_id"], "type": "btree", "unique": true },
-        "idx_follows_following_id": { "columns": ["following_id"], "type": "btree" }
+        "idx_follows_follower_following": { "columns": ["follower_id", "following_id"], "method": "btree", "unique": true },
+        "idx_follows_following_id": { "columns": ["following_id"], "method": "btree" }
       }
     },
     "likes": {
@@ -471,8 +520,8 @@ Use the same payload with `dry_run_schema` to see a diff of what will be created
         "created_at": { "type": "timestamptz", "nullable": false, "default": "now()" }
       },
       "indexes": {
-        "idx_likes_user_post": { "columns": ["user_id", "post_id"], "type": "btree", "unique": true },
-        "idx_likes_post_id": { "columns": ["post_id"], "type": "btree" }
+        "idx_likes_user_post": { "columns": ["user_id", "post_id"], "method": "btree", "unique": true },
+        "idx_likes_post_id": { "columns": ["post_id"], "method": "btree" }
       }
     }
   }

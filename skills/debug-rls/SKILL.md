@@ -54,11 +54,13 @@ Work through these steps in order. Each step narrows down the cause.
 
 ### Step 1: Check if RLS is enabled
 
-Call `get_rls_policies` with the `app_id`:
+Call `manage_rls` with `action: "list"` for the `app_id`:
 
 ```
-get_rls_policies(app_id: "app_abc123")
+manage_rls(app_id: "app_abc123", action: "list")
 ```
+
+Returns `{ policies: [...], tables_with_rls: [...] }`. The `tables_with_rls` array shows which tables have RLS turned on but no policies yet (effective default deny).
 
 - Look for the table in the response.
 - If the table has **no policies**, RLS might not be enabled at all — or it was enabled but no policies were added, which causes a default deny for all non-service roles.
@@ -170,8 +172,9 @@ Four ready-to-use recipes. Copy the MCP tool call that matches your situation.
 Use this when a table has no RLS at all and you want users to only see their own rows.
 
 ```
-create_user_isolation_policy(
+manage_rls(
   app_id: "app_abc123",
+  action: "create_user_isolation",
   table_name: "posts",
   user_column: "author_id"
 )
@@ -182,7 +185,7 @@ create_user_isolation_policy(
 - RLS enabled on the table
 - User isolation policy: `author_id = current_user_id()::uuid` for ALL commands
 - Auto-populate trigger: sets `author_id` from the JWT on INSERT (clients don't need to send it)
-- Service bypass policy: `butterbase_service` can still read/write all rows
+- Service bypass: `butterbase_service` always passes through (built into the platform)
 
 This is the recommended starting point for any user-owned data table.
 
@@ -193,8 +196,9 @@ This is the recommended starting point for any user-owned data table.
 Use this when you want anonymous users (or all authenticated users) to be able to read certain rows — for example, published blog posts or public profiles.
 
 ```
-create_policy(
+manage_rls(
   app_id: "app_abc123",
+  action: "create_policy",
   table_name: "posts",
   policy_name: "public_read_published",
   command: "SELECT",
@@ -207,18 +211,19 @@ This lets anonymous users read posts where `published = true`. They still cannot
 
 > To also allow authenticated (non-anonymous) users to read public rows, add a second policy with `role: "user"` and the same `using_expression`.
 
-Alternatively, if you haven't set up user isolation yet, you can use the shorthand in `create_user_isolation_policy`:
+Alternatively, if you haven't set up user isolation yet, use the `public_read_column` shorthand:
 
 ```
-create_user_isolation_policy(
+manage_rls(
   app_id: "app_abc123",
+  action: "create_user_isolation",
   table_name: "posts",
   user_column: "author_id",
   public_read_column: "published"
 )
 ```
 
-This sets up user isolation **and** public read access in a single call.
+This sets up user isolation **and** adds permissive SELECT policies for both `butterbase_user` and `butterbase_anon` to read rows where `published = true` — in a single call.
 
 ---
 
@@ -226,13 +231,14 @@ This sets up user isolation **and** public read access in a single call.
 
 Use this when inserts fail with `AUTH_RLS_POLICY_VIOLATION` and the user column is NULL after insert (diagnosed in Step 4).
 
-**Option A — Recommended: Replace with `create_user_isolation_policy`**
+**Option A — Recommended: replace with `create_user_isolation`**
 
-This is the cleanest fix if you're starting fresh or can replace the existing policy:
+The cleanest fix if you're starting fresh or can replace the existing policy:
 
 ```
-create_user_isolation_policy(
+manage_rls(
   app_id: "app_abc123",
+  action: "create_user_isolation",
   table_name: "posts",
   user_column: "author_id"
 )
@@ -240,13 +246,14 @@ create_user_isolation_policy(
 
 Always includes the auto-populate trigger. No manual step needed.
 
-**Option B — Additive: Add trigger to existing setup via `create_policy` with `user_column`**
+**Option B — additive: pass `user_column` on `create_policy`**
 
-Use this when you want to keep existing policies but just add the trigger:
+Use this when you want to keep existing policies but just install the trigger:
 
 ```
-create_policy(
+manage_rls(
   app_id: "app_abc123",
+  action: "create_policy",
   table_name: "posts",
   policy_name: "posts_user_insert",
   command: "INSERT",
@@ -267,8 +274,9 @@ Passing `user_column` to `create_policy` installs the auto-populate trigger alon
 Use this when you need to enforce a condition that involves another table — for example, only allowing comments on published posts.
 
 ```
-create_policy(
+manage_rls(
   app_id: "app_abc123",
+  action: "create_policy",
   table_name: "comments",
   policy_name: "comments_on_public_posts_only",
   command: "INSERT",
@@ -330,7 +338,7 @@ For `ALL` command policies, both `USING` and `WITH CHECK` may apply:
 
 After applying any fix, run through this checklist to confirm correct behavior:
 
-- [ ] `get_rls_policies` shows the expected policies for the table
+- [ ] `manage_rls` (action: "list") shows the expected policies for the table
 - [ ] `select_rows` with `as_role: "user"` returns only the user's own rows
 - [ ] `select_rows` with `as_role: "anon"` returns only publicly visible rows (or empty if no anon policy)
 - [ ] `select_rows` without `as_role` (service) returns all rows (confirms RLS is only blocking end-users, not admin)
@@ -345,7 +353,7 @@ After applying any fix, run through this checklist to confirm correct behavior:
 | Anti-pattern | Problem | Fix |
 |-------------|---------|-----|
 | Using `select_rows` without `as_role` to verify RLS | Service key bypasses RLS — result is meaningless for verification | Always use `as_role: "user"` or `as_role: "anon"` |
-| `enable_rls` + `create_policy` without `user_column` | No auto-populate trigger; clients must send user column manually | Use `create_user_isolation_policy` or pass `user_column` to `create_policy` |
+| `manage_rls` action `create_policy` without `user_column` | No auto-populate trigger; clients must send user column manually | Use `action: "create_user_isolation"` or pass `user_column` to `create_policy` |
 | Single policy with `cmd: "ALL"` but no `WITH CHECK` | INSERT/UPDATE may silently pass or fail depending on expression | Explicitly provide `with_check_expression` for write commands |
 | Relying on `butterbase_service` policies for end-user access | Service bypass is always on; end-users use `butterbase_user` or `butterbase_anon` | Write separate policies for each end-user role |
-| Missing policy for one role while having it for another | Authenticated users may see data that anonymous users cannot, or vice versa — may be intentional but often a bug | Audit all roles with `get_rls_policies` |
+| Missing policy for one role while having it for another | Authenticated users may see data that anonymous users cannot, or vice versa — may be intentional but often a bug | Audit all roles with `manage_rls` (action: "list") |

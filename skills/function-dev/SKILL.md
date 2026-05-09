@@ -17,9 +17,13 @@ Every function exports a single `handler` function with this signature:
 export async function handler(
   request: Request,
   context: {
-    db: PostgresClient,    // Query your app database
-    env: Record<string, string>,  // Access environment variables
-    user: { id: string } | null   // Current user (if auth: required)
+    db: PostgresClient,                                  // RLS-aware DB client
+    env: Record<string, string>,                         // env vars set on the function
+    user: { id: string } | null,                         // present for HTTP+auth:required; null for cron
+    waitUntil: (p: Promise<unknown>) => void,            // background work after Response (≤30s)
+    idempotency: {
+      claim: (key: string, opts?: { scope?: string; ttlSeconds?: number }) => Promise<boolean>
+    }                                                    // atomic dedup for webhook retries
   }
 ): Promise<Response>
 ```
@@ -319,37 +323,55 @@ export async function handler(req, ctx) {
 
 ## 6. Testing & Debugging
 
+The standalone tools `deploy_function` and `invoke_function` are unchanged. Everything else (logs, env updates, listing, deletion) is handled by `manage_function` with an `action` parameter.
+
 ### Invoke a Function
 
 ```
-invoke_function(app_id, function_name, method: "POST", body: { key: "value" })
+invoke_function(
+  app_id: "app_abc123",
+  function_name: "my-function",
+  method: "POST",
+  body: { key: "value" }
+)
 ```
 
-Returns the full HTTP response including status, headers, and body. Use this immediately after deploying to verify behavior.
+Returns the full HTTP response (status, headers, body, duration_ms). Use this immediately after deploying to verify behavior.
 
 ### View Error Logs
 
 ```
-get_function_logs(app_id, function_name, level: "error")
+manage_function(
+  app_id: "app_abc123",
+  action: "get_logs",
+  function_name: "my-function",
+  level: "error"
+)
 ```
 
-Returns recent invocations that resulted in errors, with stack traces.
+Returns recent invocations with errors, stack traces, and captured `console.log/warn/error` output.
 
 ### View All Logs
 
 ```
-get_function_logs(app_id, function_name)
+manage_function(
+  app_id: "app_abc123",
+  action: "get_logs",
+  function_name: "my-function",
+  limit: 100,
+  since: "2026-01-15T00:00:00Z"
+)
 ```
 
-Returns all recent invocations with timestamps, status codes, and durations.
+Filters: `limit` (default 100), `since` (ISO timestamp), `level` (`"error"` or `"all"`).
 
-### View Metrics
+### List Functions & Metrics
 
 ```
-list_functions(app_id)
+manage_function(app_id: "app_abc123", action: "list")
 ```
 
-Shows per-function metrics: invocation count, error rate, average duration.
+Returns each function's name, trigger, URL, status, and metrics (invocationCount, errorRate, avgDuration, lastInvoked).
 
 ---
 
@@ -385,13 +407,22 @@ deploy_function(
 ### Update Env Vars (without redeploying)
 
 ```
-update_function_env(app_id, function_name, envVars: { MY_SECRET: "new-value" })
+manage_function(
+  app_id: "app_abc123",
+  action: "update_env",
+  function_name: "my-function",
+  env: { MY_SECRET: "new-value", DELETE_ME: null }   // null deletes the key
+)
 ```
 
 ### Delete a Function
 
 ```
-delete_function(app_id, function_name)
+manage_function(
+  app_id: "app_abc123",
+  action: "delete",
+  function_name: "my-function"
+)
 ```
 
 ### Invocation URL Pattern

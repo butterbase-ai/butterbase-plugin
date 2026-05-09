@@ -16,18 +16,38 @@ You are working with Butterbase, an AI-Native Backend-as-a-Service. Butterbase l
 The standard sequence for building a Butterbase app:
 
 1. `init_app` — Create app, get `app_id` and `api_base`
-2. `apply_schema` — Define tables declaratively (preview with `dry_run_schema`)
-3. `create_user_isolation_policy` — Secure user-owned tables with RLS
-4. `configure_oauth_provider` — Set up social sign-in (Google, GitHub, etc.)
+2. `manage_schema` (`action: "apply"`) — Define tables declaratively (preview with `action: "dry_run"`)
+3. `manage_rls` (`action: "create_user_isolation"`) — Secure user-owned tables with RLS
+4. `manage_oauth` (`action: "configure"`) — Set up social sign-in (Google, GitHub, etc.)
 5. `deploy_function` — Add backend logic (HTTP, cron, WebSocket triggers)
-6. `create_frontend_deployment` + `start_frontend_deployment` — Deploy frontend to live URL
+6. `create_frontend_deployment` + `manage_frontend` (`action: "start_deployment"`) — Deploy frontend to live URL
+
+## Tool shape
+
+Most operations live on a small set of `manage_*` umbrella tools and take an `action` enum:
+
+- `manage_schema` — `get | dry_run | apply | list_migrations`
+- `manage_rls` — `enable | create_policy | update_policy | create_user_isolation | list | delete`
+- `manage_app` — `list | delete | pause | get_config | update_access_mode | secure | update_cors`
+- `manage_oauth` — `configure | get | update | delete`
+- `manage_auth_config` — `configure_auth_hook | update_jwt | generate_service_key`
+- `manage_function` — `list | delete | get_logs | update_env`
+- `manage_frontend` — `start_deployment | list_deployments | create_from_source | start_from_source | set_env | configure_custom_domain`
+- `manage_edge_ssr` — `create | start | create_from_source | start_from_source | list`
+- `manage_storage` — `upload_url | download_url | list | delete | update_config`
+- `manage_rag_content` — `create_collection | list_collections | get_collection | delete_collection | ingest_document | list_documents | get_document_status | delete_document`
+- `manage_realtime` — `configure | get`
+- `manage_durable_objects` — `deploy | list | get | delete | usage | list_env | set_env | delete_env`
+- `manage_integrations`, `manage_billing`, `manage_api_keys`
+
+Standalone tools (no `action`): `init_app`, `deploy_function`, `invoke_function`, `select_rows`, `insert_row`, `seed_database`, `create_frontend_deployment`, `rag_query`, `query_audit_logs`, `butterbase_docs`, `submit_suggestion`.
 
 ## Important Patterns
 
 ### Storage
-- Persist `objectId` (UUID) from upload response — NOT `objectKey` (bucket path)
-- `objectKey` is not a URL — it cannot be used as `img src` or `href`
-- Resolve download URLs at render time via `generate_download_url(objectId)` — presigned URLs expire
+- Persist `object_id` (UUID) from upload response — NOT `s3_key` (bucket path)
+- `s3_key` is not a URL — it cannot be used as `img src` or `href`
+- Resolve download URLs at render time via `manage_storage` (`action: "download_url"`, `object_id: ...`) — presigned URLs expire after 1 hour
 - For lists with many files, resolve presigned URLs in parallel (`Promise.all`)
 
 ### Serverless Functions
@@ -44,7 +64,7 @@ Three built-in roles assigned automatically based on auth:
 ### Schema
 - Declarative diffs — describe desired state, platform generates safe DDL
 - Destructive operations require explicit opt-in: `_drop: ["table"]` or `_dropColumns: ["col"]`
-- Preview changes with `dry_run_schema` before applying
+- Preview changes with `manage_schema` (`action: "dry_run"`) before applying
 
 ### Branding
 - API key prefix: `bb_sk_`
@@ -58,7 +78,7 @@ Call the `butterbase_docs` MCP tool for comprehensive reference documentation:
 | Topic | What it covers |
 |-------|---------------|
 | `overview` | Platform introduction and key features |
-| `mcp` | All 42+ MCP tools with usage examples |
+| `mcp` | All MCP tools with usage examples |
 | `rest` | Auto-generated REST API (CRUD, filtering, sorting, pagination) |
 | `auth` | End-user authentication (email/password, OAuth, JWT) |
 | `storage` | File upload/download with presigned URLs |
@@ -90,3 +110,8 @@ When running the Butterbase monorepo locally, override the MCP URL:
 | `butterbase:debug-rls` | Debugging Row-Level Security issues (access denied, wrong data) |
 | `butterbase:function-dev` | Developing serverless functions (webhooks, cron jobs, APIs) |
 | `butterbase:contributing` | Contributing to the Butterbase codebase (adding MCP tools, routes) |
+| `butterbase:storage` | File uploads, downloads, presigned URLs, ACLs |
+| `butterbase:rag-dev` | RAG collections, document ingestion, semantic search |
+| `butterbase:auth-setup` | OAuth providers, auth hooks, JWT tuning, service keys |
+| `butterbase:realtime` | WebSocket subscriptions for table changes (RLS-aware) |
+| `butterbase:durable-objects` | Stateful per-key actors for chat, multiplayer, rate limiters |
