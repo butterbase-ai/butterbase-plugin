@@ -38,9 +38,11 @@ Most operations live on a small set of `manage_*` umbrella tools and take an `ac
 - `manage_rag_content` — `create_collection | list_collections | get_collection | delete_collection | ingest_document | list_documents | get_document_status | delete_document`
 - `manage_realtime` — `configure | get`
 - `manage_durable_objects` — `deploy | list | get | delete | usage | list_env | set_env | delete_env`
+- `manage_migrations` — `get_active | abort | reverse | list_source_replicas`
+- `manage_ai` — `chat | embed | list_models | get_config | update_config | get_usage`
 - `manage_integrations`, `manage_billing`, `manage_api_keys`
 
-Standalone tools (no `action`): `init_app`, `deploy_function`, `invoke_function`, `select_rows`, `insert_row`, `seed_database`, `create_frontend_deployment`, `rag_query`, `query_audit_logs`, `butterbase_docs`, `submit_suggestion`.
+Standalone tools (no `action`): `init_app`, `deploy_function`, `invoke_function`, `select_rows`, `insert_row`, `seed_database`, `create_frontend_deployment`, `rag_query`, `query_audit_logs`, `butterbase_docs`, `submit_suggestion`, `list_regions`, `move_app`, `move_app_status`, `teardown_source_replica`.
 
 ## Important Patterns
 
@@ -115,3 +117,5 @@ When running the Butterbase monorepo locally, override the MCP URL:
 | `butterbase:auth-setup` | OAuth providers, auth hooks, JWT tuning, service keys |
 | `butterbase:realtime` | WebSocket subscriptions for table changes (RLS-aware) |
 | `butterbase:durable-objects` | Stateful per-key actors for chat, multiplayer, rate limiters |
+| `butterbase:migrations` | Moving apps between regions and managing migrations |
+| `butterbase:ai` | Using the AI gateway — chat, embeddings, models, BYOK |
