@@ -545,3 +545,7 @@ manage_schema({ app_id, action: "apply", schema, name: "add_posts_table" })
 - **Using `text` for booleans or enums** — Use the `boolean` type for true/false values. For enums, `text` is acceptable but consider adding a CHECK constraint or a lookup table for referential integrity.
 
 - **Storing file URLs directly** — URLs change (CDN migrations, domain changes). Store the object's UUID (`avatar_id uuid`) and resolve the URL at render time using `generate_download_url`. This decouples your data from your storage topology.
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-schema` so the journey orchestrator stays in sync.

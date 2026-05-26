@@ -214,3 +214,7 @@ Static deploys can't run server-side code. For Next.js (App Router with SSR/midd
 | `list` | Historical edge deployments |
 
 Frameworks: `nextjs-edge`, `remix-edge`, `other-edge`.
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-frontend` so the journey orchestrator stays in sync.

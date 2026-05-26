@@ -282,3 +282,7 @@ Runtime / async-deploy:
 | Stuff > 128 KB blobs into `state.storage` | Use Butterbase Storage and store the `object_id` in DO state |
 | Update env vars in tight loops | Each `set_env` redeploys the Worker — drops connections |
 | Forget redeploy semantics | Code change or env change evicts all instances; storage survives but in-memory caches don't |
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-durable` so the journey orchestrator stays in sync.

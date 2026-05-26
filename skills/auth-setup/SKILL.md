@@ -252,3 +252,7 @@ Do steps 1–3 **before** step 4 to avoid downtime.
 | Create service key | `manage_auth_config` (`generate_service_key`) |
 | List service keys | `manage_api_keys` (`list`) |
 | Revoke service key | `manage_api_keys` (`revoke`) |
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-auth` so the journey orchestrator stays in sync.

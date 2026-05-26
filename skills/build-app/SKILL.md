@@ -3,6 +3,8 @@ name: build-app
 description: Use when building a new Butterbase app from scratch, creating a full-stack application, or when the user asks to set up a complete backend with database, auth, and deployment
 ---
 
+> **Prefer `/butterbase:journey`** — for a fully guided multi-stage build with preflight, planning, deployment verification, and (optionally) hackathon submission. This one-shot skill remains for users who want the legacy linear setup.
+
 # Build a Complete Butterbase App
 
 This skill walks through all seven phases of building a production-ready Butterbase application — from provisioning a backend to deploying a live frontend. Follow each phase in order; later phases depend on artifacts (app_id, schema, RLS policies) produced by earlier ones.

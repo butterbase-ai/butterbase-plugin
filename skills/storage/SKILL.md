@@ -240,3 +240,7 @@ The function runs as `butterbase_user` and uses your tables' RLS to authorize, t
 | Call `upload_url` and forget step 3 | Always persist `object_id` after a successful PUT |
 | Use `public: true` everywhere "just in case" | Default to private; opt files into public explicitly |
 | Delete a file without clearing FKs | Update referencing rows first, then `action: "delete"` |
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-storage` so the journey orchestrator stays in sync.
