@@ -11,6 +11,12 @@ You are working with Butterbase, an AI-Native Backend-as-a-Service. Butterbase l
 | `VITE_API_URL` | Frontend env: API URL for Vite/React apps | `https://api.butterbase.ai/v1/app_abc123` |
 | `VITE_APP_ID` | Frontend env: App ID for Vite/React apps | `app_abc123` |
 
+## Guided Journey
+
+For a fully guided build — from idea brainstorm through deployment and (optionally) hackathon submission — invoke `/butterbase:journey`. The orchestrator reads `docs/butterbase/00-state.md` in the user's project and dispatches the next stage skill. Stages: `idea → plan → preflight → schema → rls → auth → storage → functions → ai → rag → realtime → durable → frontend → deploy → submit`. Each stage skill is also directly runnable via `/butterbase:<stage>` (e.g. `/butterbase:journey-schema`).
+
+Preflight is automatic on any stage that touches the platform: it verifies the Butterbase account, MCP connection, `BUTTERBASE_API_KEY`, and an existing or freshly-provisioned `app_id` — never proceed without it.
+
 ## Core Workflow
 
 The standard sequence for building a Butterbase app:
@@ -119,3 +125,19 @@ When running the Butterbase monorepo locally, override the MCP URL:
 | `butterbase:durable-objects` | Stateful per-key actors for chat, multiplayer, rate limiters |
 | `butterbase:migrations` | Moving apps between regions and managing migrations |
 | `butterbase:ai` | Using the AI gateway — chat, embeddings, models, BYOK |
+| `butterbase:journey` | The end-to-end orchestrator — start here for any new app |
+| `butterbase:journey-idea` | Stage 1: concrete idea brainstorm with capability tagging |
+| `butterbase:journey-plan` | Stage 2: translate idea into a Butterbase plan |
+| `butterbase:journey-preflight` | Verify account / MCP / API key / app_id before platform work |
+| `butterbase:journey-schema` | Build wrapper around `schema-design` |
+| `butterbase:journey-rls` | Build wrapper around `debug-rls` policy patterns |
+| `butterbase:journey-auth` | Build wrapper around `auth-setup` |
+| `butterbase:journey-storage` | Build wrapper around `storage` |
+| `butterbase:journey-functions` | Build wrapper around `function-dev` |
+| `butterbase:journey-ai` | Build wrapper around `ai` |
+| `butterbase:journey-rag` | Build wrapper around `rag-dev` |
+| `butterbase:journey-realtime` | Build wrapper around `realtime` |
+| `butterbase:journey-durable` | Build wrapper around `durable-objects` |
+| `butterbase:journey-frontend` | Build wrapper around `deploy-frontend` |
+| `butterbase:journey-deploy` | Smoke test the deployed app end-to-end |
+| `butterbase:journey-submit` | Hackathon submission via `prep_and_submit_hackathon_entry` |
