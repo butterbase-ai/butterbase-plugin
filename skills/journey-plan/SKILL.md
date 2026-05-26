@@ -37,7 +37,9 @@ Work through these sections in order. After each section, write the result to `0
 
 8. **Scope cut (hackathon mode).** Re-read the must-haves list. For each, ask: `"Ship now or post-hackathon?"` Write the cut list into `02-plan.md`'s "Post-hackathon" section.
 
-9. **Final approval.** Show the user the assembled plan and ask: `"Plan looks good? (yes / revise <section>)"`. Loop until yes.
+9. **Annotate skipped stages.** For every build stage NOT used in this plan (check the capability map and feature list), update `00-state.md`'s checklist to read `- [ ] <stage> (n/a)` for that row. Also do this for `rls` if `hackathon_mode: true` (mark as `(folded into schema)`).
+
+10. **Final approval.** Show the user the assembled plan and ask: `"Plan looks good? (yes / revise <section>)"`. Loop until yes.
 
 ## `02-plan.md` format
 
@@ -76,8 +78,12 @@ Work through these sections in order. After each section, write the result to `0
 3. auth
 4. storage
 5. functions
-6. frontend
-7. deploy
+6. ai          (if used)
+7. rag         (if used)
+8. realtime    (if used)
+9. durable     (if used)
+10. frontend
+11. deploy
 
 ## Post-hackathon
 - email notifications (deferred)

@@ -16,7 +16,7 @@ If the user wants to do a single stage only (e.g., just design a schema), defer 
 ## Procedure
 
 1. **Detect state.** Check whether `docs/butterbase/00-state.md` exists in the working directory.
-   - If absent: this is a fresh journey. Create `docs/butterbase/` and write a starter `00-state.md` (template below). Then proceed to stage `idea`.
+   - If absent: this is a fresh journey. Ask the user `"Is this a hackathon submission? (yes/no)"` to set `hackathon_mode`. Create `docs/butterbase/` and write a starter `00-state.md` (template below). If `hackathon_mode: false`, the starter template's `submit` row must be written as `- [ ] submit (n/a — not a hackathon)` rather than plain `- [ ] submit`. Then proceed to stage `idea`.
    - If present: read the front-matter and the stage checklist. Identify the first unchecked, non-skipped stage. That is the next stage.
 
 2. **Confirm with user.** Print a one-line summary of where we are: `"Resuming journey at <stage> for app_id <id or 'not yet provisioned'>."` Ask: `"Continue from <stage>? (yes / jump to other stage / redo previous)"`.
@@ -39,9 +39,12 @@ If the user wants to do a single stage only (e.g., just design a schema), defer 
    | durable | `butterbase:journey-durable` |
    | frontend | `butterbase:journey-frontend` |
    | deploy | `butterbase:journey-deploy` |
-   | submit | `butterbase:journey-submit` |
+   | submit | `butterbase:journey-submit` (hackathon_mode only) |
 
-4. **After the stage skill returns,** re-read `00-state.md` and ask the user whether to advance to the next unchecked stage. If `hackathon_mode: true` and all build stages are done, the next stage is `deploy` then `submit`. Loop until the cursor reaches `DONE` (every stage checked or annotated `n/a`).
+4. **After the stage skill returns,** re-read `00-state.md` and ask the user whether to advance to the next unchecked stage. Stage selection rules:
+   - If `hackathon_mode: true` and all build stages are done, the next stage is `deploy` then `submit`.
+   - If `hackathon_mode: false`, the journey ends at `deploy` — skip `submit` entirely (treat it as `(n/a)`).
+   - Loop until the cursor reaches `DONE` (every stage checked or annotated `n/a`).
 
 ## Starter `00-state.md` template
 
@@ -80,6 +83,8 @@ last_updated: <ISO-8601 timestamp>
 ## Notes
 - Journey initialised <ISO date>.
 ```
+
+If `hackathon_mode: false`, write the submit row as `- [ ] submit (n/a — not a hackathon)` instead of the plain unchecked form, so the orchestrator and any direct stage invocation will skip it.
 
 ## Outputs
 
