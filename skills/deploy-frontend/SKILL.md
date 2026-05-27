@@ -111,26 +111,99 @@ The response contains:
 
 ---
 
-## Step 5: Create Zip
+## Step 5: Create Zip (Node `archiver` — the only supported method)
 
-> ⚠️ **CRITICAL Windows Warning:** Zip files MUST use forward slashes (`/`). On Windows, built-in zip tools (File Explorer, PowerShell `Compress-Archive`) use backslashes (`\`), which causes **ALL files to be served as `text/html`** — breaking JS and CSS with MIME type errors. Always use Git Bash or WSL on Windows.
+> ⚠️ **Do not use `Compress-Archive`, File Explorer, or `zip -r` from outside the build dir.** Windows built-in tools write backslash (`\`) path separators, which makes the platform serve every file as `text/html` and breaks JS/CSS with MIME errors. Zipping from the parent dir nests `dist/` inside the archive and ships a blank page.
 
-**Windows (Git Bash or WSL):**
+Butterbase's recommended cross-platform method is the [`archiver`](https://www.npmjs.com/package/archiver) Node package. It always writes POSIX `/` separators (works identically on macOS, Linux, Windows PowerShell, cmd, Git Bash, WSL) and zips from *inside* the source dir so `index.html` lands at the zip root.
+
+**One-time setup in the project being deployed:**
+
 ```bash
-cd dist && zip -r ../frontend.zip .
+npm install --save-dev archiver
+mkdir -p scripts
 ```
 
-**Mac/Linux:**
-```bash
-cd dist && zip -r ../frontend.zip .
+**Then save this as `scripts/make-zip.mjs` (copy verbatim):**
+
+```js
+#!/usr/bin/env node
+/**
+ * Butterbase frontend zipper — the only supported way to compress a build
+ * for `create_frontend_deployment` / `create_from_source`.
+ *
+ * Usage:
+ *   node scripts/make-zip.mjs <sourceDir> <outZip> [--exclude=glob,glob,...]
+ *
+ * Examples:
+ *   node scripts/make-zip.mjs dist frontend.zip                # Vite
+ *   node scripts/make-zip.mjs out  frontend.zip                # Next.js static export
+ *   node scripts/make-zip.mjs .    source.zip \                # source-build flow
+ *     --exclude=node_modules,.next,dist,out,.git,.turbo,.cache
+ */
+import { createWriteStream } from "node:fs";
+import { stat } from "node:fs/promises";
+import { resolve } from "node:path";
+import archiver from "archiver";
+
+const [, , srcArg, outArg, ...rest] = process.argv;
+if (!srcArg || !outArg) {
+  console.error(
+    "usage: node make-zip.mjs <sourceDir> <outZip> [--exclude=glob,glob,...]"
+  );
+  process.exit(2);
+}
+
+const src = resolve(srcArg);
+const out = resolve(outArg);
+
+const excludeFlag = rest.find((a) => a.startsWith("--exclude="));
+const excludes = excludeFlag
+  ? excludeFlag
+      .slice("--exclude=".length)
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .flatMap((g) => [g, `${g}/**`])
+  : [];
+
+const srcStat = await stat(src).catch(() => null);
+if (!srcStat?.isDirectory()) {
+  console.error(`error: source is not a directory: ${src}`);
+  process.exit(1);
+}
+
+const output = createWriteStream(out);
+const archive = archiver("zip", { zlib: { level: 9 }, forceLocalTime: true });
+
+output.on("close", () => {
+  const mb = (archive.pointer() / (1024 * 1024)).toFixed(2);
+  console.log(`wrote ${out} (${mb} MB, ${archive.pointer()} bytes)`);
+});
+archive.on("warning", (err) => {
+  if (err.code === "ENOENT") console.warn(err);
+  else throw err;
+});
+archive.on("error", (err) => {
+  throw err;
+});
+
+archive.pipe(output);
+// cwd: src + glob('**/*') ⇒ entries are relative to src, so index.html
+// sits at the zip root. archiver normalises separators to '/' on every OS.
+archive.glob("**/*", { cwd: src, dot: true, ignore: excludes });
+await archive.finalize();
 ```
 
-> **Important:** Always zip from **inside** the output directory so `index.html` is at the root of the zip, not nested inside a subdirectory. If you zip from outside (e.g., `zip -r frontend.zip dist/`), the zip will contain a `dist/` folder, and the deployment will show a blank page.
+**Run it:**
 
-For Next.js static exports, replace `dist` with `out`:
-```bash
-cd out && zip -r ../frontend.zip .
-```
+| Framework        | Command                                          |
+|------------------|--------------------------------------------------|
+| Vite             | `node scripts/make-zip.mjs dist frontend.zip`    |
+| Next.js (static) | `node scripts/make-zip.mjs out  frontend.zip`    |
+| Plain HTML       | `node scripts/make-zip.mjs .    frontend.zip --exclude=node_modules,.git` |
+
+The script prints the final size on success — must be ≤ 100 MB for static deploys, ≤ 50 MB for source-build.
 
 ---
 
@@ -178,8 +251,8 @@ Call `manage_frontend` with `action: "start_deployment"` and the `deployment_id`
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| Blank page | `index.html` not at zip root | Re-zip from inside output dir: `cd dist && zip -r ../frontend.zip .` |
-| MIME type errors / broken JS/CSS | Windows backslash in zip paths | Re-zip using Git Bash or WSL: `cd dist && zip -r ../frontend.zip .` |
+| Blank page | `index.html` not at zip root | Re-zip with the supported script: `node make-zip.mjs dist frontend.zip` |
+| MIME type errors / broken JS/CSS | Windows backslash in zip paths (Compress-Archive, File Explorer) | Re-zip with `node make-zip.mjs dist frontend.zip` — archiver writes POSIX `/` on every OS |
 | API calls return 403 | CORS not configured | Add deployment URL via `manage_app` action `update_cors` |
 | Routes return 404 | SPA routing not set up | SPA routing is auto-handled for `react-vite` and `nextjs-static` framework flags |
 | Deploy stuck in BUILDING | Build error | Check `manage_frontend` action `list_deployments` for `error` field |
@@ -194,7 +267,12 @@ Call `manage_frontend` with `action: "start_deployment"` and the `deployment_id`
 If you want Butterbase to run `npm install` + build on the server, skip Steps 2–6 and use the source-build flow:
 
 1. `manage_frontend` action `create_from_source` → returns presigned URL for a source-code zip (≤ 50 MB)
-2. `cd <project> && zip -r ../source.zip . -x "node_modules/*" ".next/*" "dist/*"` — exclude build artefacts
+2. Zip the source with `make-zip.mjs` (same script as Step 5), excluding build artefacts:
+   ```bash
+   node scripts/make-zip.mjs . source.zip \
+     --exclude=node_modules,.next,dist,out,.git,.turbo,.cache
+   ```
+   Do not use `zip -r ../source.zip . -x ...` — it has the same Windows-separator hazard as Step 5.
 3. `curl -X PUT "{uploadUrl}" -H "Content-Type: application/zip" --data-binary @source.zip`
 4. `manage_frontend` action `start_from_source` with `deployment_id`, `lockfile_hash` (sha256 of `package-lock.json`), optional `build_command`, `output_dir`, `package_manager`, `user_env`
 
