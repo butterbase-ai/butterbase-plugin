@@ -20,6 +20,20 @@ Before any stage that touches a Butterbase capability (schema, auth, RLS, storag
 
 Re-consult whenever you hit an unfamiliar error, are about to invent an API shape, or the user's plan calls for a capability you haven't worked with this session.
 
+## Toolchain — SDK and CLI
+
+Three surfaces work together. Pick the right one per task:
+
+| Surface | What it's for | When to use it |
+|---|---|---|
+| **MCP tools** (this plugin) | Provisioning, schema, RLS, OAuth setup, function deploy, frontend deploy, integrations, billing config | Orchestration tasks — anything that mutates platform state. The agent's primary surface. |
+| **`@butterbase/sdk`** | Runtime client: auth, db queries, storage, realtime, function invocation. Works in browser AND Node. | All application code. Frontends. Server-side scripts. Functions that talk to other apps. Never hand-roll `fetch` against the REST API in a Butterbase app. |
+| **`@butterbase/cli`** | Local dev loop: project scaffolding, log tailing, function invocation, key generation, schema diff preview | The human developer's terminal. Install globally once per machine. |
+
+When in doubt: MCP is for agent-driven changes, SDK is for runtime code, CLI is for the developer's shell. They are complementary, not interchangeable.
+
+For specifics, `butterbase_docs` with `topic: "sdk"` or `topic: "cli"`.
+
 ## Prefer Built-In Integrations Over External SaaS
 
 Before recommending any third-party SaaS SDK, check whether Butterbase already covers it:
