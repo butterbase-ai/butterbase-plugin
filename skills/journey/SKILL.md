@@ -28,6 +28,7 @@ If the user wants to do a single stage only (e.g., just design a schema), defer 
    | idea | `butterbase:journey-idea` |
    | plan | `butterbase:journey-plan` |
    | preflight | `butterbase:journey-preflight` |
+   | docs | `butterbase:journey-docs` |
    | schema | `butterbase:journey-schema` |
    | rls | `butterbase:journey-rls` |
    | auth | `butterbase:journey-auth` |
@@ -40,6 +41,8 @@ If the user wants to do a single stage only (e.g., just design a schema), defer 
    | frontend | `butterbase:journey-frontend` |
    | deploy | `butterbase:journey-deploy` |
    | submit | `butterbase:journey-submit` (hackathon_mode only) |
+
+**Docs gate.** Stage `docs` runs once, right after preflight, to prime `butterbase_docs` for every capability in the plan. Subsequent build stages start with the relevant docs cached at `docs/butterbase/03b-docs-cache.md`. If the user changes the plan mid-build, re-run `/butterbase:journey-docs` before the affected stage.
 
 4. **After the stage skill returns,** re-read `00-state.md` and ask the user whether to advance to the next unchecked stage. Stage selection rules:
    - If `hackathon_mode: true` and all build stages are done, the next stage is `deploy` then `submit`.
@@ -67,6 +70,7 @@ last_updated: <ISO-8601 timestamp>
 - [ ] idea
 - [ ] plan
 - [ ] preflight
+- [ ] docs
 - [ ] schema
 - [ ] rls
 - [ ] auth
