@@ -48,6 +48,12 @@ Work through these sections in order. After each section, write the result to `0
 
 7. **Frontend stack.** `"Frontend: ① Vite + React ② Next.js ③ static HTML ④ none (API-only)."` Write to `00-state.md` `frontend_stack`.
 
+### Toolchain question
+
+Ask: "Will your app's code use `@butterbase/sdk` only in the frontend, only server-side (functions, scripts), or both?" Record under Toolchain → SDK surfaces.
+
+Ask: "Want to install `@butterbase/cli` for the local dev loop (logs, scaffolding, key rotation)? (yes/no — default yes)" Record under Toolchain → CLI usage.
+
 8. **Scope cut (hackathon mode).** Re-read the must-haves list. For each, ask: `"Ship now or post-hackathon?"` Write the cut list into `02-plan.md`'s "Post-hackathon" section.
 
 9. **Annotate skipped stages.** For every build stage NOT used in this plan (check the capability map and feature list), update `00-state.md`'s checklist to read `- [ ] <stage> (n/a)` for that row. Also do this for `rls` if `hackathon_mode: true` (mark as `(folded into schema)`).
@@ -84,6 +90,15 @@ Work through these sections in order. After each section, write the result to `0
 
 ## Frontend
 - Vite + React
+
+## Toolchain
+
+- **SDK surfaces**: <client-side only | server-side only | both>
+  - Client-side: install `@butterbase/sdk` in the frontend; use `auth`, `db`, `storage`, `realtime`.
+  - Server-side: install `@butterbase/sdk` in functions / scripts; use the service-key flow for elevated access.
+- **CLI usage**: <yes / no>
+  - Yes (default): use `butterbase` CLI for local scaffolding, log tailing (`butterbase logs <fn>`), function invocation, and key rotation.
+- **Why both**: MCP tools provision and orchestrate; SDK + CLI are the runtime + dev loop.
 
 ## Build order
 1. schema
