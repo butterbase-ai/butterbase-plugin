@@ -26,6 +26,23 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 0. **Refresh docs.** Call `butterbase_docs` with `topic: "frontend"`. For framework-specific deploy patterns, also WebFetch `https://docs.butterbase.ai/frontend`. Skip if cache is fresh.
 
+### Use `@butterbase/sdk`
+
+Any frontend that talks to the deployed Butterbase app should use `@butterbase/sdk`:
+
+- Install: `npm install @butterbase/sdk` inside the frontend project.
+- Initialize: `import { createClient } from '@butterbase/sdk'; const bb = createClient({ apiUrl: import.meta.env.VITE_API_URL, appId: import.meta.env.VITE_APP_ID });`
+- Auth: `bb.auth.signInWithOAuth({ provider: 'google' })`, `bb.auth.signOut()`, `bb.auth.getSession()`.
+- Data: `bb.db.from('posts').select('*').eq('user_id', userId)`.
+- Storage: `bb.storage.upload(file)`, persist the returned `object_id`, resolve download URLs via the SDK at render time.
+- Realtime: `bb.realtime.from('posts').on('insert', cb).subscribe()`.
+
+Do NOT hand-roll `fetch()` against the REST API in a Butterbase frontend — the SDK handles auth headers, presigned URL refresh, realtime reconnection, and type-narrowing. The MCP tools are not for runtime code.
+
+For framework-specific patterns (Next.js Server Components, SvelteKit load functions, etc.), call `butterbase_docs` with `topic: "sdk"`.
+
+### Build and deploy
+
 1. Read the Frontend section and `frontend_stack` from `00-state.md`. Print: `"About to deploy a <stack> frontend for app_id <id>. Proceed?"`. Wait for `yes`.
 2. Invoke `butterbase:deploy-frontend` via the Skill tool with the frontend spec, `app_id`, and `api_base`. The wrapped skill scaffolds (if no `package.json` exists in `./web` or chosen path), sets `VITE_API_URL` and `VITE_APP_ID`, builds, calls `create_frontend_deployment`, then `manage_frontend action: start_deployment`.
 3. Capture the live URL from the response. Show it to the user.
