@@ -24,6 +24,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "frontend"`. For end-to-end smoke patterns, also WebFetch `https://docs.butterbase.ai/deploy`. Skip if cache is fresh.
+
 For each check, log a one-line result to `04-build-log.md`. Halt on the first ✗ and ask the user to fix or skip.
 
 1. **Frontend reachable.** If `deployed_url` is set, fetch it via Bash `curl -sS -o /dev/null -w "%{http_code}" <url>`. Expect `200`. Log `<ISO>  deploy  curl  200  ok` or `... <code>  fail`.

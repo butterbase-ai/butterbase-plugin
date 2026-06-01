@@ -24,6 +24,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "auth"`. For provider-specific setup (Google/GitHub/Apple), also WebFetch `https://docs.butterbase.ai/auth`. Skip if cache is fresh.
+
 1. Read the Auth section of `02-plan.md`. Print it back: `"About to configure auth: providers=<list>, demo_user=<yes/no>. Proceed?"`. Wait for `yes`.
 2. Invoke `butterbase:auth-setup` via the Skill tool, passing the Auth plan and `app_id`. The wrapped skill will prompt for each provider's client ID/secret and call `manage_oauth action: configure`. If a demo user is requested, it seeds one via `insert_row` on the users table.
 3. After it returns, run `manage_oauth action: get` to confirm and print the redirect URLs the user must register with each provider.

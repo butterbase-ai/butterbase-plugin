@@ -23,6 +23,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "schema"`. If the plan calls for advanced schema features (vectors, partial indexes, generated columns), also WebFetch `https://docs.butterbase.ai/schema`. Skip this step if `docs/butterbase/03b-docs-cache.md` was written less than 30 minutes ago and already covers `schema`.
+
 1. Read the Tables section of `02-plan.md`. Print it back: `"About to apply schema: <N tables>. Proceed?"`. Wait for `yes`.
 2. Invoke `butterbase:schema-design` via the Skill tool, passing the Tables section and `app_id`. The wrapped skill will build the declarative schema, dry-run it with `manage_schema action: dry_run`, then apply with `action: apply` after user approval of the diff.
 3. After it returns, optionally run a sanity `manage_schema action: get` and show the user the live shape.

@@ -24,6 +24,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "frontend"`. For framework-specific deploy patterns, also WebFetch `https://docs.butterbase.ai/frontend`. Skip if cache is fresh.
+
 1. Read the Frontend section and `frontend_stack` from `00-state.md`. Print: `"About to deploy a <stack> frontend for app_id <id>. Proceed?"`. Wait for `yes`.
 2. Invoke `butterbase:deploy-frontend` via the Skill tool with the frontend spec, `app_id`, and `api_base`. The wrapped skill scaffolds (if no `package.json` exists in `./web` or chosen path), sets `VITE_API_URL` and `VITE_APP_ID`, builds, calls `create_frontend_deployment`, then `manage_frontend action: start_deployment`.
 3. Capture the live URL from the response. Show it to the user.

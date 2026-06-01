@@ -24,6 +24,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "auth"`. For RLS-specific patterns, also WebFetch `https://docs.butterbase.ai/auth/rls`. Skip if cache is fresh.
+
 1. Read the RLS section of `02-plan.md`. Print it back: `"About to install RLS policies: <list>. Proceed?"`. Wait for `yes`.
 2. Invoke `butterbase:debug-rls` via the Skill tool with mode `proactive`, passing the RLS plan and `app_id`. For each user-isolation entry, the wrapped skill calls `manage_rls action: create_user_isolation`. For custom policies, `manage_rls action: enable` then `action: create_policy`.
 3. After it returns, sanity-check with `manage_rls action: list` and show the user.

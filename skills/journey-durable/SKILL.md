@@ -24,6 +24,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "functions"`. For Durable Object class structure, also WebFetch `https://docs.butterbase.ai/durable-objects`. Skip if cache is fresh.
+
 For each Durable Object class in the plan:
 
 1. Print: `"About to deploy Durable Object: <name>. Proceed?"`. Wait for `yes`.

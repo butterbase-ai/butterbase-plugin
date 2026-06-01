@@ -24,6 +24,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "realtime"`. For WebSocket subscription shape and RLS interaction, also WebFetch `https://docs.butterbase.ai/realtime`. Skip if cache is fresh.
+
 1. Read the Realtime section. Print it back: `"About to enable realtime on: <tables>. Proceed?"`. Wait for `yes`.
 2. Invoke `butterbase:realtime` via the Skill tool with the realtime plan and `app_id`. The wrapped skill calls `manage_realtime action: configure` per table and reminds the user that RLS still applies to subscribed rows.
 3. Verify with `manage_realtime action: get`.

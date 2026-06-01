@@ -24,6 +24,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "storage"`. For presigned URL patterns, also WebFetch `https://docs.butterbase.ai/storage`. Skip if cache is fresh.
+
 1. Read the Storage section of `02-plan.md`. Print it back: `"About to configure storage: <buckets>. Proceed?"`. Wait for `yes`.
 2. Invoke `butterbase:storage` via the Skill tool, passing the Storage plan and `app_id`. The wrapped skill calls `manage_storage action: update_config` per bucket (visibility, max object size).
 3. Smoke: request an upload URL via `manage_storage action: upload_url` and a matching `download_url` to confirm presigned URL minting works.

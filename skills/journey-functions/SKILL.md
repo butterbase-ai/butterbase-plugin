@@ -24,6 +24,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 ## Procedure
 
+0. **Refresh docs.** Call `butterbase_docs` with `topic: "functions"`. For trigger types and ctx shape, also WebFetch `https://docs.butterbase.ai/functions`. Skip if cache is fresh.
+
 For each function in the plan, in order:
 
 1. Print: `"About to build function: <name> (trigger=<trigger>). Proceed?"`. Wait for `yes`.
