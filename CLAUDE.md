@@ -11,11 +11,39 @@ You are working with Butterbase, an AI-Native Backend-as-a-Service. Butterbase l
 | `VITE_API_URL` | Frontend env: API URL for Vite/React apps | `https://api.butterbase.ai/v1/app_abc123` |
 | `VITE_APP_ID` | Frontend env: App ID for Vite/React apps | `app_abc123` |
 
+## Always Check Docs Before Platform Work
+
+Before any stage that touches a Butterbase capability (schema, auth, RLS, storage, functions, AI, RAG, realtime, durable objects, frontend, billing, integrations, substrate), do both:
+
+1. **Call `butterbase_docs`** with the matching topic (see table in the Guided Journey section).
+2. **WebFetch** `https://docs.butterbase.ai/<area>` when you need human-facing context (URLs, prose, example apps, screenshots) — the MCP doc is the source of truth for API shapes, the website is the source of truth for narrative.
+
+Re-consult whenever you hit an unfamiliar error, are about to invent an API shape, or the user's plan calls for a capability you haven't worked with this session.
+
 ## Guided Journey
 
 For a fully guided build — from idea brainstorm through deployment and (optionally) hackathon submission — invoke `/butterbase:journey`. The orchestrator reads `docs/butterbase/00-state.md` in the user's project and dispatches the next stage skill. Stages: `idea → plan → preflight → schema → rls → auth → storage → functions → ai → rag → realtime → durable → frontend → deploy → submit`. Each stage skill is also directly runnable via `/butterbase:<stage>` (e.g. `/butterbase:journey-schema`).
 
 Preflight is automatic on any stage that touches the platform: it verifies the Butterbase account, MCP connection, `BUTTERBASE_API_KEY`, and an existing or freshly-provisioned `app_id` — never proceed without it.
+
+### Stage → docs topic map
+
+| Stage | `butterbase_docs` topic | `docs.butterbase.ai` path |
+|---|---|---|
+| schema | `schema` | `/schema` |
+| rls | `auth` | `/auth/rls` |
+| auth | `auth` | `/auth` |
+| storage | `storage` | `/storage` |
+| functions | `functions` | `/functions` |
+| ai | `ai` | `/ai` |
+| rag | `rag` | `/ai/rag` |
+| realtime | `realtime` | `/realtime` |
+| durable | `functions` | `/durable-objects` |
+| frontend | `frontend` | `/frontend` |
+| deploy | `frontend` | `/deploy` |
+| substrate | `substrate` | `/substrate` |
+| integrations | `integrations` | `/integrations` |
+| payments | `billing` | `/payments` |
 
 ## Core Workflow
 
