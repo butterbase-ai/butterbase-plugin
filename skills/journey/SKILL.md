@@ -40,13 +40,15 @@ If the user wants to do a single stage only (e.g., just design a schema), defer 
    | durable | `butterbase:journey-durable` |
    | frontend | `butterbase:journey-frontend` |
    | deploy | `butterbase:journey-deploy` |
+   | substrate | `butterbase:journey-substrate` (optional) |
    | submit | `butterbase:journey-submit` (hackathon_mode only) |
 
 **Docs gate.** Stage `docs` runs once, right after preflight, to prime `butterbase_docs` for every capability in the plan. Subsequent build stages start with the relevant docs cached at `docs/butterbase/03b-docs-cache.md`. If the user changes the plan mid-build, re-run `/butterbase:journey-docs` before the affected stage.
 
 4. **After the stage skill returns,** re-read `00-state.md` and ask the user whether to advance to the next unchecked stage. Stage selection rules:
-   - If `hackathon_mode: true` and all build stages are done, the next stage is `deploy` then `submit`.
-   - If `hackathon_mode: false`, the journey ends at `deploy` — skip `submit` entirely (treat it as `(n/a)`).
+   - If `hackathon_mode: true` and all build stages are done, the next stage is `deploy` then `substrate` then `submit`.
+   - If `hackathon_mode: false`, the journey ends at `deploy` — skip `substrate` and `submit` entirely (treat them as `(n/a)`).
+   - The `substrate` stage is always optional. In hackathon mode, default to skipping it (mark as `(n/a — optional, can add post-submission)`); in non-hackathon mode, skip it entirely as it is not part of the core journey.
    - Loop until the cursor reaches `DONE` (every stage checked or annotated `n/a`).
 
 ## Starter `00-state.md` template
@@ -82,6 +84,7 @@ last_updated: <ISO-8601 timestamp>
 - [ ] durable
 - [ ] frontend
 - [ ] deploy
+- [ ] substrate (optional)
 - [ ] submit
 
 ## Notes
