@@ -76,6 +76,15 @@ If `hackathon_mode: true` in `00-state.md`: after question 4, also ask:
 | manage_durable_objects | no | |
 ```
 
+### Toolchain note
+
+At the end of the idea write-up, also note in one line that the build will use:
+- `@butterbase/sdk` for any frontend / Node app code
+- `@butterbase/cli` for the local dev loop (scaffolding, logs, key generation)
+- The MCP tools (this plugin) for orchestrating provisioning, deployments, integrations
+
+This sets expectations before `plan` makes specific package choices.
+
 ## Outputs
 
 - Writes `docs/butterbase/01-idea.md`.
