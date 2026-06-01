@@ -17,6 +17,19 @@ Stage 2 of the guided journey. Turn the idea brief into an actionable Butterbase
 - `docs/butterbase/01-idea.md` (must exist — if absent, bounce back to `journey-idea`).
 - `docs/butterbase/00-state.md` (for `hackathon_mode`, `hackathon_deadline`).
 
+### External services — check built-ins first
+
+When the plan needs email, messaging, calendar, CRM, docs, or project-management integration:
+
+1. Invoke `butterbase:integrations` and call `manage_integrations` `action: "list_available"` to see what Composio covers for this app.
+2. If a toolkit fits, the plan should record "via manage_integrations (toolkit: <name>)" instead of naming an external SDK.
+
+When the plan needs payments:
+
+1. Invoke `butterbase:payments`.
+2. Default to Stripe Connect via `manage_billing` unless the user's region forces a fallback (see the payments skill).
+3. Record the choice ("Stripe Connect" or "<regional gateway> via function proxy") in the plan's Payments section.
+
 ## Procedure
 
 Work through these sections in order. After each section, write the result to `02-plan.md` before moving on. One question at a time per the spec's questioning discipline.

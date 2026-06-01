@@ -26,6 +26,10 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 
 0. **Refresh docs.** Call `butterbase_docs` with `topic: "functions"`. For trigger types and ctx shape, also WebFetch `https://docs.butterbase.ai/functions`. Skip if cache is fresh.
 
+0.5. **Check built-in integrations first.** Before writing function code that calls an external SaaS for email / messaging / calendar / CRM / payments:
+   - Email / Slack / etc. → invoke `butterbase:integrations`. The function should call `manage_integrations` `execute_action` rather than installing a third-party SDK.
+   - Payments → invoke `butterbase:payments`. The function should use Stripe Connect via `manage_billing` unless the plan has explicitly chosen a regional gateway.
+
 For each function in the plan, in order:
 
 1. Print: `"About to build function: <name> (trigger=<trigger>). Proceed?"`. Wait for `yes`.
