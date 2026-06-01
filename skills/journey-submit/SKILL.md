@@ -10,14 +10,14 @@ Stage 5 (final) of the guided journey. Resolve the active hackathon, confirm fie
 ## When to use
 
 - Dispatched by `journey` when `current_stage: submit` and `hackathon_mode: true`.
-- Directly via `/butterbase:submit`.
+- Directly via `/butterbase-skills:submit`.
 - No-op (returns with `"submit is disabled outside hackathon mode"`) if `hackathon_mode: false`.
 
 ## Preflight
 
-If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase:journey-preflight` first. Wait for it to return successfully before proceeding.
+If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase-skills:journey-preflight` first. Wait for it to return successfully before proceeding.
 
-Additionally: refuse to run unless `deploy` is ticked in `00-state.md`. If it is not, tell the user to run `/butterbase:journey-deploy` first.
+Additionally: refuse to run unless `deploy` is ticked in `00-state.md`. If it is not, tell the user to run `/butterbase-skills:journey-deploy` first.
 
 ## Inputs
 

@@ -10,12 +10,12 @@ Stage 3h of the guided journey. Enable WebSocket subscriptions per the plan.
 ## When to use
 
 - Dispatched by `journey` when `current_stage: realtime`.
-- Directly via `/butterbase:journey-realtime`.
+- Directly via `/butterbase-skills:journey-realtime`.
 - Skipped (annotated `(n/a)`) if the plan has no Realtime section.
 
 ## Preflight
 
-If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase:journey-preflight` first. Wait for it to return successfully before proceeding.
+If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase-skills:journey-preflight` first. Wait for it to return successfully before proceeding.
 
 ## Inputs
 
@@ -27,7 +27,7 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 0. **Refresh docs.** Call `butterbase_docs` with `topic: "realtime"`. For WebSocket subscription shape and RLS interaction, also WebFetch `https://docs.butterbase.ai/realtime`. Skip if cache is fresh.
 
 1. Read the Realtime section. Print it back: `"About to enable realtime on: <tables>. Proceed?"`. Wait for `yes`.
-2. Invoke `butterbase:realtime` via the Skill tool with the realtime plan and `app_id`. The wrapped skill calls `manage_realtime action: configure` per table and reminds the user that RLS still applies to subscribed rows.
+2. Invoke `butterbase-skills:realtime` via the Skill tool with the realtime plan and `app_id`. The wrapped skill calls `manage_realtime action: configure` per table and reminds the user that RLS still applies to subscribed rows.
 3. Verify with `manage_realtime action: get`.
 4. Append one line to `docs/butterbase/04-build-log.md`:
    `<ISO timestamp>  realtime  manage_realtime  ok`

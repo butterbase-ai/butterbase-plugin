@@ -548,4 +548,4 @@ manage_schema({ app_id, action: "apply", schema, name: "add_posts_table" })
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-schema` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-schema` so the journey orchestrator stays in sync.

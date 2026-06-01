@@ -74,6 +74,6 @@ Stuck or wrong choice? Different state, different tool:
 
 ## 6. What this skill does NOT cover
 
-- Schema migrations (table/column changes) — use `butterbase:schema-design`.
+- Schema migrations (table/column changes) — use `butterbase-skills:schema-design`.
 - Region selection at app *creation* time — use `init_app` directly with the `region` parameter.
 - Cross-region replica reads (none — Butterbase is single-region-active per app).

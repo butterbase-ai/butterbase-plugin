@@ -10,12 +10,12 @@ Stage 3j of the guided journey. Build (or adopt) and deploy the frontend.
 ## When to use
 
 - Dispatched by `journey` when `current_stage: frontend`.
-- Directly via `/butterbase:journey-frontend`.
+- Directly via `/butterbase-skills:journey-frontend`.
 - Skipped (annotated `(n/a)`) if `frontend_stack: none` in `00-state.md`.
 
 ## Preflight
 
-If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase:journey-preflight` first. Wait for it to return successfully before proceeding.
+If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase-skills:journey-preflight` first. Wait for it to return successfully before proceeding.
 
 ## Inputs
 
@@ -44,7 +44,7 @@ For framework-specific patterns (Next.js Server Components, SvelteKit load funct
 ### Build and deploy
 
 1. Read the Frontend section and `frontend_stack` from `00-state.md`. Print: `"About to deploy a <stack> frontend for app_id <id>. Proceed?"`. Wait for `yes`.
-2. Invoke `butterbase:deploy-frontend` via the Skill tool with the frontend spec, `app_id`, and `api_base`. The wrapped skill scaffolds (if no `package.json` exists in `./web` or chosen path), sets `VITE_API_URL` and `VITE_APP_ID`, builds, calls `create_frontend_deployment`, then `manage_frontend action: start_deployment`.
+2. Invoke `butterbase-skills:deploy-frontend` via the Skill tool with the frontend spec, `app_id`, and `api_base`. The wrapped skill scaffolds (if no `package.json` exists in `./web` or chosen path), sets `VITE_API_URL` and `VITE_APP_ID`, builds, calls `create_frontend_deployment`, then `manage_frontend action: start_deployment`.
 3. Capture the live URL from the response. Show it to the user.
 4. Append one line to `docs/butterbase/04-build-log.md`:
    `<ISO timestamp>  frontend  manage_frontend  <live-url>  ok`

@@ -1,4 +1,4 @@
-# @butterbase/plugin
+# @butterbase/skills
 
 Claude Code plugin for [Butterbase](https://butterbase.ai) — the AI-Native Backend-as-a-Service.
 
@@ -7,7 +7,7 @@ This plugin gives Claude deep knowledge of Butterbase's 42+ MCP tools, guides yo
 ## Installation
 
 ```bash
-claude plugin add @butterbase/plugin
+claude plugin add @butterbase/skills
 ```
 
 ## Setup

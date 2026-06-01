@@ -10,7 +10,7 @@ Stage 2 of the guided journey. Turn the idea brief into an actionable Butterbase
 ## When to use
 
 - Dispatched by `journey` when `current_stage: plan`.
-- Directly via `/butterbase:plan`.
+- Directly via `/butterbase-skills:plan`.
 
 ## Inputs
 
@@ -21,12 +21,12 @@ Stage 2 of the guided journey. Turn the idea brief into an actionable Butterbase
 
 When the plan needs email, messaging, calendar, CRM, docs, or project-management integration:
 
-1. Invoke `butterbase:integrations` and call `manage_integrations` `action: "list_available"` to see what Composio covers for this app.
+1. Invoke `butterbase-skills:integrations` and call `manage_integrations` `action: "list_available"` to see what Composio covers for this app.
 2. If a toolkit fits, the plan should record "via manage_integrations (toolkit: <name>)" instead of naming an external SDK.
 
 When the plan needs payments:
 
-1. Invoke `butterbase:payments`.
+1. Invoke `butterbase-skills:payments`.
 2. Default to Stripe Connect via `manage_billing` unless the user's region forces a fallback (see the payments skill).
 3. Record the choice ("Stripe Connect" or "<regional gateway> via function proxy") in the plan's Payments section.
 

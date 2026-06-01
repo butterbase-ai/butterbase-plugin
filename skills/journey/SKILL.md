@@ -9,9 +9,9 @@ End-to-end orchestrator. Walks the user from idea to deployed Butterbase app, an
 
 ## When to use
 
-Invoke automatically when the user signals end-to-end intent: "I want to build…", "let's build an app", "ship this", "help me build a hackathon project". Invoke explicitly when the user runs `/butterbase:journey`.
+Invoke automatically when the user signals end-to-end intent: "I want to build…", "let's build an app", "ship this", "help me build a hackathon project". Invoke explicitly when the user runs `/butterbase-skills:journey`.
 
-If the user wants to do a single stage only (e.g., just design a schema), defer to the matching standalone skill (`schema-design`) or per-stage command (`/butterbase:journey-schema`) instead of starting the full journey.
+If the user wants to do a single stage only (e.g., just design a schema), defer to the matching standalone skill (`schema-design`) or per-stage command (`/butterbase-skills:journey-schema`) instead of starting the full journey.
 
 ## Toolchain
 
@@ -36,25 +36,25 @@ The journey will prompt for both in `plan` (which SDK surfaces does the app need
 
    | Stage | Skill |
    |---|---|
-   | idea | `butterbase:journey-idea` |
-   | plan | `butterbase:journey-plan` |
-   | preflight | `butterbase:journey-preflight` |
-   | docs | `butterbase:journey-docs` |
-   | schema | `butterbase:journey-schema` |
-   | rls | `butterbase:journey-rls` |
-   | auth | `butterbase:journey-auth` |
-   | storage | `butterbase:journey-storage` |
-   | functions | `butterbase:journey-functions` |
-   | ai | `butterbase:journey-ai` |
-   | rag | `butterbase:journey-rag` |
-   | realtime | `butterbase:journey-realtime` |
-   | durable | `butterbase:journey-durable` |
-   | frontend | `butterbase:journey-frontend` |
-   | deploy | `butterbase:journey-deploy` |
-   | substrate | `butterbase:journey-substrate` (optional) |
-   | submit | `butterbase:journey-submit` (hackathon_mode only) |
+   | idea | `butterbase-skills:journey-idea` |
+   | plan | `butterbase-skills:journey-plan` |
+   | preflight | `butterbase-skills:journey-preflight` |
+   | docs | `butterbase-skills:journey-docs` |
+   | schema | `butterbase-skills:journey-schema` |
+   | rls | `butterbase-skills:journey-rls` |
+   | auth | `butterbase-skills:journey-auth` |
+   | storage | `butterbase-skills:journey-storage` |
+   | functions | `butterbase-skills:journey-functions` |
+   | ai | `butterbase-skills:journey-ai` |
+   | rag | `butterbase-skills:journey-rag` |
+   | realtime | `butterbase-skills:journey-realtime` |
+   | durable | `butterbase-skills:journey-durable` |
+   | frontend | `butterbase-skills:journey-frontend` |
+   | deploy | `butterbase-skills:journey-deploy` |
+   | substrate | `butterbase-skills:journey-substrate` (optional) |
+   | submit | `butterbase-skills:journey-submit` (hackathon_mode only) |
 
-**Docs gate.** Stage `docs` runs once, right after preflight, to prime `butterbase_docs` for every capability in the plan. Subsequent build stages start with the relevant docs cached at `docs/butterbase/03b-docs-cache.md`. If the user changes the plan mid-build, re-run `/butterbase:journey-docs` before the affected stage.
+**Docs gate.** Stage `docs` runs once, right after preflight, to prime `butterbase_docs` for every capability in the plan. Subsequent build stages start with the relevant docs cached at `docs/butterbase/03b-docs-cache.md`. If the user changes the plan mid-build, re-run `/butterbase-skills:journey-docs` before the affected stage.
 
 4. **After the stage skill returns,** re-read `00-state.md` and ask the user whether to advance to the next unchecked stage. Stage selection rules:
    - If `hackathon_mode: true` and all build stages are done, the next stage is `deploy` then `substrate` then `submit`.

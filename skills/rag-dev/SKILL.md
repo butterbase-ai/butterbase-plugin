@@ -236,4 +236,4 @@ Tag with `metadata: { version: "v3" }`. Query with `filter: { version: "v3" }`. 
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-rag` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-rag` so the journey orchestrator stays in sync.

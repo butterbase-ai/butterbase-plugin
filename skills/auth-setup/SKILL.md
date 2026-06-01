@@ -10,7 +10,7 @@ Two umbrella tools cover end-user authentication:
 - **`manage_oauth`** — provider configuration (Google, GitHub, Apple, X, custom)
 - **`manage_auth_config`** — auth hooks, JWT lifetimes, service key generation
 
-For broad app build-out, see also `butterbase:build-app`. This skill is the deep dive.
+For broad app build-out, see also `butterbase-skills:build-app`. This skill is the deep dive.
 
 ---
 
@@ -118,7 +118,7 @@ A post-auth function is a deployed Butterbase function invoked **fire-and-forget
 ### Wire it up
 
 ```js
-// 1. Deploy the function first (see butterbase:function-dev)
+// 1. Deploy the function first (see butterbase-skills:function-dev)
 deploy_function({
   app_id: "app_abc123",
   name: "after-auth",
@@ -255,4 +255,4 @@ Do steps 1–3 **before** step 4 to avoid downtime.
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-auth` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-auth` so the journey orchestrator stays in sync.

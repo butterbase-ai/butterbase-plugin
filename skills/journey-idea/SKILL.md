@@ -10,7 +10,7 @@ Stage 1 of the guided journey. Turn a vague idea into a written brief with capab
 ## When to use
 
 - Dispatched by `journey` when `current_stage: idea`.
-- Directly via `/butterbase:idea`.
+- Directly via `/butterbase-skills:idea`.
 
 ## Inputs
 

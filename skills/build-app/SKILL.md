@@ -3,7 +3,7 @@ name: build-app
 description: Use when building a new Butterbase app from scratch, creating a full-stack application, or when the user asks to set up a complete backend with database, auth, and deployment
 ---
 
-> **Prefer `/butterbase:journey`** — for a fully guided multi-stage build with preflight, planning, deployment verification, and (optionally) hackathon submission. This one-shot skill remains for users who want the legacy linear setup.
+> **Prefer `/butterbase-skills:journey`** — for a fully guided multi-stage build with preflight, planning, deployment verification, and (optionally) hackathon submission. This one-shot skill remains for users who want the legacy linear setup.
 
 # Build a Complete Butterbase App
 

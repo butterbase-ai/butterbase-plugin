@@ -43,7 +43,7 @@ For external side effects (sending email, calling an API), substrate writes to t
 
 ## Linking an app
 
-When `apps.substrate_user_id` is set to the app owner's `platform_user.id`, functions in that app get `ctx.substrate` injected at cold start, with reader and proposer methods. Use `/butterbase:journey-substrate` to enable this for an app.
+When `apps.substrate_user_id` is set to the app owner's `platform_user.id`, functions in that app get `ctx.substrate` injected at cold start, with reader and proposer methods. Use `/butterbase-skills:journey-substrate` to enable this for an app.
 
 ## API keys
 

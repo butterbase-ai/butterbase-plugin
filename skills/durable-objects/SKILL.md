@@ -5,7 +5,7 @@ description: Use when building stateful per-key actors — chat rooms, multiplay
 
 # Butterbase Durable Objects
 
-Durable Objects (DOs) are **stateful per-key actors** running on Cloudflare Workers. Each instance has its own in-memory state and a built-in transactional KV store. Use one when state must survive across requests for a single room/user/agent. For stateless work, use a serverless function instead (`butterbase:function-dev`).
+Durable Objects (DOs) are **stateful per-key actors** running on Cloudflare Workers. Each instance has its own in-memory state and a built-in transactional KV store. Use one when state must survive across requests for a single room/user/agent. For stateless work, use a serverless function instead (`butterbase-skills:function-dev`).
 
 One tool: **`manage_durable_objects`**.
 
@@ -285,4 +285,4 @@ Runtime / async-deploy:
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-durable` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-durable` so the journey orchestrator stays in sync.

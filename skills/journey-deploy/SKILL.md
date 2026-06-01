@@ -10,11 +10,11 @@ Stage 4 of the guided journey. Verify the deployed app actually works end-to-end
 ## When to use
 
 - Dispatched by `journey` when `current_stage: deploy`.
-- Directly via `/butterbase:journey-deploy`.
+- Directly via `/butterbase-skills:journey-deploy`.
 
 ## Preflight
 
-If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase:journey-preflight` first. Wait for it to return successfully before proceeding.
+If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase-skills:journey-preflight` first. Wait for it to return successfully before proceeding.
 
 ## Inputs
 

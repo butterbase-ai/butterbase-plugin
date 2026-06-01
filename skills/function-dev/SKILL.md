@@ -435,4 +435,4 @@ For HTTP triggers, this is the URL clients call directly.
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-functions` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-functions` so the journey orchestrator stays in sync.

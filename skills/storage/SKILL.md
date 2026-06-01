@@ -243,4 +243,4 @@ The function runs as `butterbase_user` and uses your tables' RLS to authorize, t
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-storage` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-storage` so the journey orchestrator stays in sync.

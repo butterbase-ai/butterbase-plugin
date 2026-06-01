@@ -10,7 +10,7 @@ Gate that ensures the user can actually talk to the Butterbase platform before a
 ## When to use
 
 - Automatically as the first step of any `journey-*` build stage when `03-preflight.md` is missing, older than 24 hours, or `00-state.md`'s `app_id` is null.
-- Directly via `/butterbase:journey-preflight` when the user wants to re-verify.
+- Directly via `/butterbase-skills:journey-preflight` when the user wants to re-verify.
 
 ## Procedure
 
@@ -41,7 +41,7 @@ For each check, write a one-line result to `03-preflight.md` (`<check> ✓/✗ <
 - api_key        ✓
 - app_provisioned ✓  app_id=app_abc123 region=us-east-1
 
-Re-run with /butterbase:journey-preflight.
+Re-run with /butterbase-skills:journey-preflight.
 ```
 
 ## Outputs

@@ -295,4 +295,4 @@ Frameworks: `nextjs-edge`, `remix-edge`, `other-edge`.
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-frontend` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-frontend` so the journey orchestrator stays in sync.

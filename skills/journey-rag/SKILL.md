@@ -10,12 +10,12 @@ Stage 3g of the guided journey. Create RAG collections and ingest initial docume
 ## When to use
 
 - Dispatched by `journey` when `current_stage: rag`.
-- Directly via `/butterbase:journey-rag`.
+- Directly via `/butterbase-skills:journey-rag`.
 - Skipped (annotated `(n/a)`) if the plan has no RAG section.
 
 ## Preflight
 
-If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase:journey-preflight` first. Wait for it to return successfully before proceeding.
+If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase-skills:journey-preflight` first. Wait for it to return successfully before proceeding.
 
 ## Inputs
 
@@ -27,7 +27,7 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 0. **Refresh docs.** Call `butterbase_docs` with `topic: "rag"`. For ingestion + retrieval patterns, also WebFetch `https://docs.butterbase.ai/ai/rag`. Skip if cache is fresh.
 
 1. Read the RAG section. Print it back: `"About to set up RAG: collections=<list>. Proceed?"`. Wait for `yes`.
-2. Invoke `butterbase:rag-dev` via the Skill tool with the RAG plan and `app_id`. The wrapped skill calls `manage_rag_content action: create_collection`, then `ingest_document` for any seed sources the user provides.
+2. Invoke `butterbase-skills:rag-dev` via the Skill tool with the RAG plan and `app_id`. The wrapped skill calls `manage_rag_content action: create_collection`, then `ingest_document` for any seed sources the user provides.
 3. Smoke: call `rag_query` with a representative question and show the user the top hit.
 4. Append one line to `docs/butterbase/04-build-log.md`:
    `<ISO timestamp>  rag  manage_rag_content  ok`

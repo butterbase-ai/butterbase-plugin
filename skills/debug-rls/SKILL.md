@@ -360,4 +360,4 @@ After applying any fix, run through this checklist to confirm correct behavior:
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-rls` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-rls` so the journey orchestrator stays in sync.

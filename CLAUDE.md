@@ -47,7 +47,7 @@ Concretely: **do not suggest Resend / SendGrid / Postmark / Mailgun for email** 
 
 ## Guided Journey
 
-For a fully guided build — from idea brainstorm through deployment and (optionally) hackathon submission — invoke `/butterbase:journey`. The orchestrator reads `docs/butterbase/00-state.md` in the user's project and dispatches the next stage skill. Stages: `idea → plan → preflight → schema → rls → auth → storage → functions → ai → rag → realtime → durable → frontend → deploy → submit`. Each stage skill is also directly runnable via `/butterbase:<stage>` (e.g. `/butterbase:journey-schema`).
+For a fully guided build — from idea brainstorm through deployment and (optionally) hackathon submission — invoke `/butterbase-skills:journey`. The orchestrator reads `docs/butterbase/00-state.md` in the user's project and dispatches the next stage skill. Stages: `idea → plan → preflight → schema → rls → auth → storage → functions → ai → rag → realtime → durable → frontend → deploy → submit`. Each stage skill is also directly runnable via `/butterbase-skills:<stage>` (e.g. `/butterbase-skills:journey-schema`).
 
 Preflight is automatic on any stage that touches the platform: it verifies the Butterbase account, MCP connection, `BUTTERBASE_API_KEY`, and an existing or freshly-provisioned `app_id` — never proceed without it.
 

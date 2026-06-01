@@ -10,12 +10,12 @@ Stage 3e of the guided journey. Implement and deploy each function in the plan.
 ## When to use
 
 - Dispatched by `journey` when `current_stage: functions`.
-- Directly via `/butterbase:journey-functions`.
+- Directly via `/butterbase-skills:journey-functions`.
 - Skipped (annotated `(n/a)`) if the plan lists no functions.
 
 ## Preflight
 
-If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase:journey-preflight` first. Wait for it to return successfully before proceeding.
+If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase-skills:journey-preflight` first. Wait for it to return successfully before proceeding.
 
 ## Inputs
 
@@ -27,8 +27,8 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 0. **Refresh docs.** Call `butterbase_docs` with `topic: "functions"`. For trigger types and ctx shape, also WebFetch `https://docs.butterbase.ai/functions`. Skip if cache is fresh.
 
 0.5. **Check built-in integrations first.** Before writing function code that calls an external SaaS for email / messaging / calendar / CRM / payments:
-   - Email / Slack / etc. → invoke `butterbase:integrations`. The function should call `manage_integrations` `execute_action` rather than installing a third-party SDK.
-   - Payments → invoke `butterbase:payments`. The function should use Stripe Connect via `manage_billing` unless the plan has explicitly chosen a regional gateway.
+   - Email / Slack / etc. → invoke `butterbase-skills:integrations`. The function should call `manage_integrations` `execute_action` rather than installing a third-party SDK.
+   - Payments → invoke `butterbase-skills:payments`. The function should use Stripe Connect via `manage_billing` unless the plan has explicitly chosen a regional gateway.
 
 ### `@butterbase/sdk` works server-side too
 
@@ -56,7 +56,7 @@ For server-side patterns, `butterbase_docs` `topic: "sdk"`.
 For each function in the plan, in order:
 
 1. Print: `"About to build function: <name> (trigger=<trigger>). Proceed?"`. Wait for `yes`.
-2. Invoke `butterbase:function-dev` via the Skill tool with the function spec (name, trigger, behaviour, dependencies) and `app_id`. The wrapped skill scaffolds the handler, writes tests where appropriate, and calls `deploy_function`. Reminder it must enforce: handler signature `(request, { db, env, user })` and must return `new Response(...)`.
+2. Invoke `butterbase-skills:function-dev` via the Skill tool with the function spec (name, trigger, behaviour, dependencies) and `app_id`. The wrapped skill scaffolds the handler, writes tests where appropriate, and calls `deploy_function`. Reminder it must enforce: handler signature `(request, { db, env, user })` and must return `new Response(...)`.
 3. Smoke: call `invoke_function` for HTTP/cron functions and confirm a 2xx + expected body. For WebSocket, defer the smoke to frontend integration.
 4. Append one line per function to `docs/butterbase/04-build-log.md`:
    `<ISO timestamp>  functions  deploy_function  <fn-name>  ok`

@@ -9,7 +9,7 @@ A short, mechanical priming step. The goal is that every downstream stage starts
 
 ## When to use
 
-Invoke automatically after `journey-preflight` returns. Also invoke standalone (`/butterbase:journey-docs`) any time the user changes the plan or you realize a stage is using a capability you haven't refreshed this session.
+Invoke automatically after `journey-preflight` returns. Also invoke standalone (`/butterbase-skills:journey-docs`) any time the user changes the plan or you realize a stage is using a capability you haven't refreshed this session.
 
 ## Procedure
 

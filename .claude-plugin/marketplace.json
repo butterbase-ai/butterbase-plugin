@@ -1,5 +1,5 @@
 {
-  "name": "butterbase",
+  "name": "butterbase-skills",
   "description": "Butterbase plugin marketplace",
   "owner": {
     "name": "Butterbase",
@@ -7,7 +7,7 @@
   },
   "plugins": [
     {
-      "name": "butterbase",
+      "name": "butterbase-skills",
       "description": "Build full-stack apps with Butterbase — AI-Native Backend-as-a-Service. Skills for app creation, schema design, frontend deployment, RLS debugging, serverless functions, and contributing.",
       "version": "0.2.0",
       "source": "./",

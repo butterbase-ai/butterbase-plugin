@@ -10,12 +10,12 @@ Stage 3d of the guided journey. Configure storage buckets/ACLs from the plan.
 ## When to use
 
 - Dispatched by `journey` when `current_stage: storage`.
-- Directly via `/butterbase:journey-storage`.
+- Directly via `/butterbase-skills:journey-storage`.
 - Skipped (annotated `(n/a)`) if the plan has no Storage section.
 
 ## Preflight
 
-If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase:journey-preflight` first. Wait for it to return successfully before proceeding.
+If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase-skills:journey-preflight` first. Wait for it to return successfully before proceeding.
 
 ## Inputs
 
@@ -27,7 +27,7 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 0. **Refresh docs.** Call `butterbase_docs` with `topic: "storage"`. For presigned URL patterns, also WebFetch `https://docs.butterbase.ai/storage`. Skip if cache is fresh.
 
 1. Read the Storage section of `02-plan.md`. Print it back: `"About to configure storage: <buckets>. Proceed?"`. Wait for `yes`.
-2. Invoke `butterbase:storage` via the Skill tool, passing the Storage plan and `app_id`. The wrapped skill calls `manage_storage action: update_config` per bucket (visibility, max object size).
+2. Invoke `butterbase-skills:storage` via the Skill tool, passing the Storage plan and `app_id`. The wrapped skill calls `manage_storage action: update_config` per bucket (visibility, max object size).
 3. Smoke: request an upload URL via `manage_storage action: upload_url` and a matching `download_url` to confirm presigned URL minting works.
 4. Append one line to `docs/butterbase/04-build-log.md`:
    `<ISO timestamp>  storage  manage_storage  ok`

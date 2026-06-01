@@ -10,12 +10,12 @@ Stage 3b of the guided journey. Install Row-Level Security policies for user-own
 ## When to use
 
 - Dispatched by `journey` when `current_stage: rls`.
-- Directly via `/butterbase:journey-rls`.
+- Directly via `/butterbase-skills:journey-rls`.
 - Folded into `journey-schema` when `hackathon_mode: true` (do not run separately).
 
 ## Preflight
 
-If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase:journey-preflight` first. Wait for it to return successfully before proceeding.
+If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-state.md` has `app_id: null`, invoke `butterbase-skills:journey-preflight` first. Wait for it to return successfully before proceeding.
 
 ## Inputs
 
@@ -27,7 +27,7 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
 0. **Refresh docs.** Call `butterbase_docs` with `topic: "auth"`. For RLS-specific patterns, also WebFetch `https://docs.butterbase.ai/auth/rls`. Skip if cache is fresh.
 
 1. Read the RLS section of `02-plan.md`. Print it back: `"About to install RLS policies: <list>. Proceed?"`. Wait for `yes`.
-2. Invoke `butterbase:debug-rls` via the Skill tool with mode `proactive`, passing the RLS plan and `app_id`. For each user-isolation entry, the wrapped skill calls `manage_rls action: create_user_isolation`. For custom policies, `manage_rls action: enable` then `action: create_policy`.
+2. Invoke `butterbase-skills:debug-rls` via the Skill tool with mode `proactive`, passing the RLS plan and `app_id`. For each user-isolation entry, the wrapped skill calls `manage_rls action: create_user_isolation`. For custom policies, `manage_rls action: enable` then `action: create_policy`.
 3. After it returns, sanity-check with `manage_rls action: list` and show the user.
 4. Append one line to `docs/butterbase/04-build-log.md`:
    `<ISO timestamp>  rls  manage_rls  ok`

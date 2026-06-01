@@ -220,4 +220,4 @@ Other clients receive `presence_state` updates with everyone's metadata. No DB w
 
 ---
 
-If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-realtime` so the journey orchestrator stays in sync.
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase-skills:journey-realtime` so the journey orchestrator stays in sync.
