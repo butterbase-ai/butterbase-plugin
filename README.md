@@ -1,4 +1,4 @@
-# @butterbase/skills
+# Butterbase Skills
 
 Claude Code plugin for [Butterbase](https://butterbase.ai) — the AI-Native Backend-as-a-Service.
 
