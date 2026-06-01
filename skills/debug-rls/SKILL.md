@@ -357,3 +357,7 @@ After applying any fix, run through this checklist to confirm correct behavior:
 | Single policy with `cmd: "ALL"` but no `WITH CHECK` | INSERT/UPDATE may silently pass or fail depending on expression | Explicitly provide `with_check_expression` for write commands |
 | Relying on `butterbase_service` policies for end-user access | Service bypass is always on; end-users use `butterbase_user` or `butterbase_anon` | Write separate policies for each end-user role |
 | Missing policy for one role while having it for another | Authenticated users may see data that anonymous users cannot, or vice versa — may be intentional but often a bug | Audit all roles with `manage_rls` (action: "list") |
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-rls` so the journey orchestrator stays in sync.

@@ -217,3 +217,7 @@ Other clients receive `presence_state` updates with everyone's metadata. No DB w
 | Hold thousands of subscriptions per client | One connection, one or two subscribed tables — the server handles fan-out |
 | Re-call `configure` in a loop on every page load | It's idempotent but each call still touches the DB. Configure once during app setup. |
 | Send custom auth headers from the browser | WebSocket API can't set them — pass the JWT as `?token=` query param |
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-realtime` so the journey orchestrator stays in sync.

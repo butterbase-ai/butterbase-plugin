@@ -432,3 +432,7 @@ https://api.butterbase.ai/v1/{app_id}/fn/{function-name}
 ```
 
 For HTTP triggers, this is the URL clients call directly.
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-functions` so the journey orchestrator stays in sync.

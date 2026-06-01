@@ -233,3 +233,7 @@ Tag with `metadata: { version: "v3" }`. Query with `filter: { version: "v3" }`. 
 - Metadata is exact-match only — no LIKE, no ranges. Pre-bucket continuous values (e.g. `tier: "free" | "pro"`) before ingesting.
 - File ingestion **requires** prior upload to `manage_storage`; you cannot stream raw bytes into `ingest_document`.
 - A failed document stays in the collection with `status: "failed"` and an `errorMessage`. Delete and re-ingest to retry.
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-rag` so the journey orchestrator stays in sync.

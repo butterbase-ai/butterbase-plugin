@@ -115,3 +115,7 @@ Returns aggregate token counts + cost. Useful for billing reconciliation, spendi
 - Streaming chat — use the SDK (`ai.chatStream`) inside a function or DO.
 - Vector storage / retrieval — see `butterbase:rag-dev` (RAG collections wrap embeddings + search together).
 - AI in deployed functions — they import `@butterbase/sdk` and call `client.ai.*` directly; no MCP needed at runtime.
+
+---
+
+If a `docs/butterbase/00-state.md` exists in the working directory, prefer invoking via `/butterbase:journey-ai` so the journey orchestrator stays in sync.
