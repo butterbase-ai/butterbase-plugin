@@ -27,6 +27,10 @@ For each check, write a one-line result to `03-preflight.md` (`<check> ✓/✗ <
    - Null → ask the user: `"No app yet. Create one now? (yes/no — if no, you can paste an existing app_id)"`. On yes, call `mcp__butterbase__init_app` (ask for app name and region — recommend `us-east-1` as default). Capture `app_id` and `api_base` from the response. Update `00-state.md` front-matter.
    - User-provided app_id → verify with `manage_app get_config`; on success update `00-state.md`.
 
+5. **CLI installed.** Run `butterbase --version`. If "command not found":
+   - Read the Toolchain section of `02-plan.md`. If `CLI usage: yes` (default), prompt: "Install `@butterbase/cli` globally now? (yes / skip)". On yes, run `npm install -g @butterbase/cli`. On skip, note in `03-preflight.md` that the CLI is not installed and which workflows will require dashboard fallback.
+   - If `CLI usage: no`, skip this check.
+
 ## `03-preflight.md` format
 
 ```markdown
