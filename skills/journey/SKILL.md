@@ -13,6 +13,17 @@ Invoke automatically when the user signals end-to-end intent: "I want to build�
 
 If the user wants to do a single stage only (e.g., just design a schema), defer to the matching standalone skill (`schema-design`) or per-stage command (`/butterbase:journey-schema`) instead of starting the full journey.
 
+## Toolchain
+
+The journey assumes two npm packages alongside the MCP tools:
+
+| Package | Role | When to install |
+|---|---|---|
+| `@butterbase/sdk` | TypeScript client for the deployed app — `auth.signIn`, `db.from(...).select()`, `storage.upload`, realtime subscriptions, function invocation. Works both in the browser (frontend) and in Node (functions, scripts, server-side). | Install in any frontend or any Node service that talks to the deployed app. Auto-added by frontend scaffolds. |
+| `@butterbase/cli` | Local-dev CLI — project scaffolding, log tailing, function invocation from the shell, API-key generation, schema diff preview without the dashboard. | Install globally (`npm i -g @butterbase/cli`) once per dev machine. Used during `journey-preflight`. |
+
+The journey will prompt for both in `plan` (which SDK surfaces does the app need?) and `preflight` (is the CLI installed?). The MCP tools and these packages are complementary: MCP is for agentic / orchestration flows; SDK + CLI are for ordinary application code and the human dev loop.
+
 ## Procedure
 
 1. **Detect state.** Check whether `docs/butterbase/00-state.md` exists in the working directory.
