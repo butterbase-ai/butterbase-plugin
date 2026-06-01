@@ -30,6 +30,29 @@ If `docs/butterbase/03-preflight.md` is missing, older than 24 hours, or `00-sta
    - Email / Slack / etc. → invoke `butterbase:integrations`. The function should call `manage_integrations` `execute_action` rather than installing a third-party SDK.
    - Payments → invoke `butterbase:payments`. The function should use Stripe Connect via `manage_billing` unless the plan has explicitly chosen a regional gateway.
 
+### `@butterbase/sdk` works server-side too
+
+Inside a function, prefer `ctx.db` / `ctx.storage` / `ctx.user` for the common cases — those are pre-wired and authenticated against the calling user. But for cross-app calls, scripts, or scheduled jobs that operate on multiple apps, instantiate `@butterbase/sdk` with a service key (`bb_sk_`) and use the same client surface as the frontend.
+
+Example for a cron function that aggregates from another app:
+```ts
+import { createClient } from '@butterbase/sdk';
+
+export async function handler(_request: Request, ctx: { env: Record<string,string> }) {
+  const other = createClient({
+    apiUrl: ctx.env.OTHER_APP_API_URL,
+    apiKey: ctx.env.OTHER_APP_SERVICE_KEY,
+  });
+  const { data } = await other.db.from('events').select('*').gte('created_at', ...);
+  // ...
+  return new Response('ok');
+}
+```
+
+For server-side patterns, `butterbase_docs` `topic: "sdk"`.
+
+### Build each function
+
 For each function in the plan, in order:
 
 1. Print: `"About to build function: <name> (trigger=<trigger>). Proceed?"`. Wait for `yes`.
