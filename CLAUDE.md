@@ -136,6 +136,14 @@ When running the Butterbase monorepo locally, override the MCP URL:
 - Dashboard API: `http://localhost:4100`
 - Start the stack: `docker-compose -f docker-compose.local.yml up`
 
+### Substrate (optional add-on)
+
+Per-user agent memory. One substrate per Butterbase account, opt-in per app. When an app's `apps.substrate_user_id` is set, its functions get `ctx.substrate` injected. MCP tools: `propose_action`, `approve_action`, `reject_action`, `get_entity`, `find_entities`, `search_memory`, `list_outbox`, `retry_outbox`, `cancel_outbox`.
+
+Suggest substrate when the user describes: agent that remembers across sessions, founder copilot, anything that proposes actions on the user's behalf. Skip for plain CRUD apps.
+
+For a single API key that works on both app and substrate endpoints, generate via `manage_auth_config` `action: "generate_service_key"` with `substrate_access: true`.
+
 ## Available Skills
 
 | Skill | When to use |
@@ -169,3 +177,5 @@ When running the Butterbase monorepo locally, override the MCP URL:
 | `butterbase:journey-frontend` | Build wrapper around `deploy-frontend` |
 | `butterbase:journey-deploy` | Smoke test the deployed app end-to-end |
 | `butterbase:journey-submit` | Hackathon submission via `prep_and_submit_hackathon_entry` |
+| `butterbase:substrate` | Per-user agent memory backend (entities, decisions, action ledger). Optional add-on. |
+| `butterbase:journey-substrate` | Optional journey stage: link a deployed app to the owner's substrate so `ctx.substrate` is injected into functions. |
