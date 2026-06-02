@@ -1,6 +1,6 @@
 {
   "name": "@butterbase/skills",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Claude Code plugin for Butterbase — AI-Native Backend-as-a-Service. Skills for app creation, schema design, deployment, debugging, and contributing.",
   "keywords": ["butterbase", "claude-code-plugin", "mcp", "baas", "backend", "skills"],
   "author": "Butterbase",

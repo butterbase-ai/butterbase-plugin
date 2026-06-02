@@ -24,8 +24,11 @@ Invoke automatically when the journey orchestrator's cursor reaches `substrate`.
 
 3. **On yes:**
    a. If `platform_users.substrate_provisioned_at` is NULL for the caller, call `POST /v1/me/substrate/provision` first (or invoke whatever MCP wrapper exists — check `butterbase_docs` topic `substrate`).
-   b. Link the app: `POST /v1/apps/<app_id>/substrate` with body `{"substrate_user_id": "<owner_id>"}`. (The control-API enforces `substrate_user_id == owner_id` in v1.)
-   c. Verify: `GET /v1/apps/<app_id>` and assert `substrate_user_id` matches.
+   b. Link the app. Use whichever surface you have:
+      - **MCP:** `manage_app` with `{ action: "link_substrate", app_id: "<app_id>" }`.
+      - **CLI:** `butterbase apps link-substrate <app_id>`.
+      - **REST (curl):** `POST /v1/me/apps/<app_id>/substrate-link` with empty body and `Authorization: Bearer <bb_sk_*>` for the app owner. The route enforces caller == app owner and sets `apps.substrate_user_id` to the caller's id.
+   c. Verify: `manage_app` with `{ action: "get_config", app_id: "<app_id>" }` and assert `substrate_user_id` is non-null.
    d. Smoke: invoke any HTTP function the app already has and check `ctx.substrate` is defined (if the function logs it). If no function exists yet, skip the smoke and note in the artifact.
 
 4. **Write artifact.** `docs/butterbase/04b-substrate.md`:
