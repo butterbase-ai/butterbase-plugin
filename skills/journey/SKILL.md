@@ -49,17 +49,21 @@ The journey will prompt for both in `plan` (which SDK surfaces does the app need
    | rag | `butterbase-skills:journey-rag` |
    | realtime | `butterbase-skills:journey-realtime` |
    | durable | `butterbase-skills:journey-durable` |
+   | agents | `butterbase-skills:journey-agents` |
    | frontend | `butterbase-skills:journey-frontend` |
    | deploy | `butterbase-skills:journey-deploy` |
    | substrate | `butterbase-skills:journey-substrate` (optional) |
    | submit | `butterbase-skills:journey-submit` (hackathon_mode only) |
+   | templates | `butterbase-skills:journey-templates` (optional) |
 
 **Docs gate.** Stage `docs` runs once, right after preflight, to prime `butterbase_docs` for every capability in the plan. Subsequent build stages start with the relevant docs cached at `docs/butterbase/03b-docs-cache.md`. If the user changes the plan mid-build, re-run `/butterbase-skills:journey-docs` before the affected stage.
 
 4. **After the stage skill returns,** re-read `00-state.md` and ask the user whether to advance to the next unchecked stage. Stage selection rules:
-   - If `hackathon_mode: true` and all build stages are done, the next stage is `deploy` then `substrate` then `submit`.
-   - If `hackathon_mode: false`, the journey ends at `deploy` — skip `substrate` and `submit` entirely (treat them as `(n/a)`).
+   - Build-stage order is: schema → rls → auth → storage → functions → ai → rag → realtime → durable → **agents** → frontend.
+   - If `hackathon_mode: true` and all build stages are done, the next stage is `deploy` then `substrate` then `submit` then `templates`.
+   - If `hackathon_mode: false`, the journey ends at `deploy` unless the user opts into `templates` — skip `substrate` and `submit` entirely (treat them as `(n/a)`).
    - The `substrate` stage is always optional. In hackathon mode, default to skipping it (mark as `(n/a — optional, can add post-submission)`); in non-hackathon mode, skip it entirely as it is not part of the core journey.
+   - The `templates` stage is always optional. It runs after `deploy` (non-hackathon) or after `submit` (hackathon). Default is to skip unless `01-idea.md` or `02-plan.md` flags `publish_as_template: true`.
    - Loop until the cursor reaches `DONE` (every stage checked or annotated `n/a`).
 
 ## Starter `00-state.md` template
@@ -93,10 +97,12 @@ last_updated: <ISO-8601 timestamp>
 - [ ] rag
 - [ ] realtime
 - [ ] durable
+- [ ] agents
 - [ ] frontend
 - [ ] deploy
 - [ ] substrate (optional)
 - [ ] submit
+- [ ] templates (optional)
 
 ## Notes
 - Journey initialised <ISO date>.

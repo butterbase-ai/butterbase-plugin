@@ -23,7 +23,7 @@ Follow the cross-cutting rules from the spec:
 - **Multiple-choice preferred**, with 2–4 concrete options.
 - **Concrete, not abstract.**
 - **Recommend** when a Butterbase primitive is obvious.
-- **Tag inline.** When a feature surfaces, append the capability tag immediately (`→ manage_schema`, `→ deploy_function`, `→ manage_storage`, `→ manage_oauth`, `→ manage_rag_content`, `→ manage_realtime`, `→ manage_durable_objects`, `→ manage_ai`).
+- **Tag inline.** When a feature surfaces, append the capability tag immediately (`→ manage_schema`, `→ deploy_function`, `→ manage_storage`, `→ manage_oauth`, `→ manage_rag_content`, `→ manage_realtime`, `→ manage_durable_objects`, `→ manage_ai`, `→ create_agent`).
 - **Write as you go.** After each answered question, append the decision to `01-idea.md` so progress survives a crash.
 
 Walk through these questions in order. Do not skip — but adapt the wording.
@@ -39,6 +39,8 @@ Walk through these questions in order. Do not skip — but adapt the wording.
 9. `"Does the UI need live updates or presence? (yes → manage_realtime; no → skip)"`
 10. `"Any chat rooms / multiplayer / per-user-actor state? (yes → manage_durable_objects; no → skip)"`
 11. `"Any LLM features (chat, embeddings, summarisation)? (yes → manage_ai; no → skip)"`
+12. `"Any multi-step LLM+tool workflows the user triggers (e.g. 'summarise my orders', 'auto-tag a doc', 'research and reply')? (yes → create_agent; no → skip)"`. If yes, also ask: `"Will the agent need external MCP servers (e.g. GitHub, Slack, custom MCP)?"` and `"Visibility: ① only the developer ② any logged-in user ③ unauthenticated public — note: public + write tools requires explicit safety acknowledgement."`
+13. `"Are you planning to publish this app as a public template others can clone? (yes / unlisted-public / no)"`. Set `publish_as_template: <yes|unlisted|no>` in `00-state.md` front-matter. Public templates require a README with clone instructions and `butterbase repo push` to sync the source tree — flag this so `plan` and the publish stage know to plan for it.
 
 If `hackathon_mode: true` in `00-state.md`: after question 4, also ask:
 - `"Hackathon deadline (ISO date/time)?"` — write to `00-state.md` front-matter.
@@ -74,6 +76,8 @@ If `hackathon_mode: true` in `00-state.md`: after question 4, also ask:
 | manage_rag_content | no | |
 | manage_realtime | no | |
 | manage_durable_objects | no | |
+| create_agent | no | |
+| publish_as_template | no | set true if user plans to share this app publicly |
 ```
 
 ### Toolchain note

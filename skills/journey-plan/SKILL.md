@@ -46,7 +46,20 @@ Work through these sections in order. After each section, write the result to `0
 
 6. **AI / RAG / realtime / durable.** Only if used. Capture model choice (AI), collections (RAG), tables to subscribe to (realtime), object kinds (durable).
 
+6b. **Agents.** Only if `create_agent` is tagged in the idea. For each agent, capture:
+   - `name` (slug), one-line purpose.
+   - Tool surface: which builtins (`query_table`, `insert_row`, …), which functions (must exist in the Functions section), which MCP servers (URL + transport).
+   - Visibility: private | authenticated | public. If public AND any write tool is reachable, mark `safety_acknowledged_needed: true` and set per-IP / per-user / per-app rate limits + `daily_budget_usd`.
+   - Default model.
+   - Note that the agent record will **not** be carried by clone replay — the spec JSON (under `agents/<name>.json`) rides along in the repo snapshot, so this matters for the publish stage too.
+
 7. **Frontend stack.** `"Frontend: ① Vite + React ② Next.js ③ static HTML ④ none (API-only)."` Write to `00-state.md` `frontend_stack`.
+
+7b. **Publish-as-template.** Read `publish_as_template` from `00-state.md` front-matter (set by `journey-idea`). If `yes` or `unlisted`, plan for it now:
+   - README outline (one-liner, env-var-per-function list, OAuth setup, agent re-import, MCP server registration, seed data, first-run smoke).
+   - Which env vars use the auto-mint convention (`butterbase_api_key`) vs. require manual user input on clone.
+   - Whether `agents/*.json` files need to be exported and committed (yes if Agents section is non-empty).
+   - Note that publishing requires `butterbase repo push` to upload the source tree as a snapshot — without it, cloners get an empty file tree.
 
 ### Toolchain question
 
@@ -88,6 +101,23 @@ Ask: "Want to install `@butterbase/cli` for the local dev loop (logs, scaffoldin
 ## AI / RAG / realtime / durable
 - (none)
 
+## Agents
+- `order-summariser` — purpose: summarise a user's recent orders on demand.
+  - Tools: builtin `query_table`, function `format-currency`.
+  - Visibility: authenticated. Rate: 60/hr per user. Daily budget: $5.
+  - Default model: claude-haiku-4-5-20251001.
+  - Spec file: `agents/order-summariser.json` (committed to repo).
+- (omit section entirely if no agents)
+
+## Publish-as-template
+- Intent: yes / unlisted / no
+- README outline: <bullet list of sections>
+- Env vars cloners must supply: <list per function>
+- Auto-mint eligible keys: `butterbase_api_key` (etc.)
+- Agent specs to bundle: `agents/*.json`
+- Snapshot push: `butterbase repo push` at end of journey-templates.
+- (omit section entirely if publish_as_template = no)
+
 ## Frontend
 - Vite + React
 
@@ -110,8 +140,10 @@ Ask: "Want to install `@butterbase/cli` for the local dev loop (logs, scaffoldin
 7. rag         (if used)
 8. realtime    (if used)
 9. durable     (if used)
-10. frontend
-11. deploy
+10. agents     (if used — must come after functions, ai, and any MCP-server setup)
+11. frontend
+12. deploy
+13. templates (optional — only if publish_as_template != no)
 
 ## Post-hackathon
 - email notifications (deferred)
