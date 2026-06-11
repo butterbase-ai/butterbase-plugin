@@ -122,10 +122,10 @@ const { data: estimate } = await bb.ai.meetings.estimateCost({
 
 | Dimension | Rate |
 |-----------|------|
-| Recording (mp4 or audio_only) | **$0.50 / hour**, prorated per second |
-| Transcription | **$0.15 / hour**, prorated per second |
+| Recording (mp4 or audio_only) | **$0.50/hr + markup**, prorated per second |
+| Transcription | **$0.15/hr + markup**, prorated per second |
 
-Both charges are applied against the app's AI credit balance once the bot reaches `done`. The app's `markup_pct` (configured via `manage_ai`) is applied on top.
+Both charges are applied against the app's AI credit balance once the bot reaches `done`.
 
 For user-pays apps, hold a projected credit reservation at bot-start time and display a live cost counter using the bot's current duration (polled from `bb.ai.meetings.get`).
 
