@@ -18,6 +18,12 @@ session is not a server and should not pretend to be one. Split it:
 Same skill, same vMCP, same substrate, two runtimes. The runner executes under a scoped identity
 so the ledger records "OPC-agent did X" and its authority is exactly the policy layer, no more.
 
+Escalation routing follows the same split. The escalation channel is recorded in the autonomy
+policy at onboarding. In the cockpit, a held action surfaces inline in the founder's session. The
+hosted runner, which has no session to surface into, delivers held actions and briefings to that
+channel through a substrate outbox target (one per channel, for example Slack or email). Either
+way the held state is the ledger row, so approval is the same `approve` call from either runtime.
+
 **For a demo:** build the cockpit path live and narrate the runner. Show the loops as registered
 attention rules (config that exists), and explain that production runs them unattended with the
 identical gates. Do not build the runner for a demo. One clean cockpit loop plus the dial beats

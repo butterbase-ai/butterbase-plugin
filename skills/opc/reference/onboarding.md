@@ -93,11 +93,22 @@ that will silently fail.
 Show the founder the runnable functions and loops (each with a one line description and a default
 cadence), the policy defaults, and the named gaps. On confirmation, write to the substrate.
 
-### 1. Foundational memory (company basics)
+### 1. Foundational memory (company basics and operating functions)
 
 `propose capability=upsert_entity` with `type: self` for the company record (mission, what it
-does, stage, what it sells, customer type as `attrs`). Then `propose capability=record_decision`
-of `kind: mission` for the mission statement so it is searchable foundational memory.
+does, stage, what it sells, customer type as `attrs`). Then write two ambient-salience decisions:
+
+- `propose capability=record_decision`, `kind: mission`, `salience: ambient` — the mission and
+  what the company does.
+- `propose capability=record_decision`, `kind: operational`, `salience: ambient`, titled "OPC
+  operating functions" — the confirmed function set and the loop that serves each (for example:
+  customer-health, support triage, billing monitoring, commitment follow-through, weekly
+  briefing). This is the single record a run reads to know which functions exist; it complements
+  `list_rules`, which holds the schedule.
+
+Ambient salience is the mechanism that matters here: it keeps foundational context always present
+at low weight, so every run is grounded in the company rather than drifting, without that context
+crowding the working set.
 
 ### 2. The autonomy policy (one policy_decision)
 

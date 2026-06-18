@@ -59,9 +59,12 @@ anything touching payment methods or keys. Run the policy check BEFORE execution
 action as a structured call with legible params. The substrate returns:
 
 - allow: execute.
-- hold (`requires_approval`): pause THIS action with its `action_id`, notify the founder on the
-  escalation channel with the action and its params, and resume only on `approve`. Keep the
-  other loops moving; do not block the whole run on one held action.
+- hold (`requires_approval`): pause THIS action with its `action_id`, notify the founder with the
+  action and its params, and resume only on `approve`. Keep the other loops moving; do not block
+  the whole run on one held action. How the notification fires: in the cockpit the held action
+  surfaces inline in the founder's session; the hosted runner delivers it to the configured
+  escalation channel through a substrate outbox target registered for that channel. The held
+  state lives in the ledger either way, so approval can come later, from either runtime.
 - deny (`rejected`): do not execute. Record why and surface it in the briefing.
 
 High stakes actions must be structured so the gate can see the params it needs (audience scope,
