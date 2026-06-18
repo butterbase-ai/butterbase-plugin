@@ -6,18 +6,24 @@ adjustment**, never blank slate generation.
 
 ## Before the interview: read current state
 
-Never overwrite blindly. First:
+Never overwrite blindly, but keep this to a quick three-call check, not a deep sweep:
 
 1. `manage_substrate action=get_settings` for the current dial.
 2. `manage_substrate action=find_entities type=self` for an existing company record.
 3. `manage_substrate action=search_memory q="OPC autonomy policy"` for existing config.
 
-If config exists, switch to revise mode: show the founder what is configured and adjust, rather
-than re-onboarding.
+If both the `self` record and the autonomy policy come back empty, this is a fresh onboarding: go
+straight to the interview. If config exists, switch to revise mode: show the founder what is
+configured and adjust, rather than re-onboarding. Do not read customer entities, source artifacts,
+or other memory at this stage; that belongs to the operating loop, not onboarding.
 
 ## The interview (about five questions)
 
-Ask in plain language. Infer the archetype from the answers; do not ask "pick an archetype".
+Ask the founder these questions directly and in plain language, and treat their answers as
+authoritative, even when some facts could be inferred from existing substrate data. Onboarding is
+the founder's input moment; do not pre-fill the company description by mining the substrate, and
+do not skip a question because you think you already know the answer. Infer only the archetype
+from the answers; do not ask "pick an archetype".
 
 1. **What does the company do, and what stage is it at?** (Infers archetype and ambition.)
 2. **What do you sell, and to whom?** (Infers the function set and the comms surface.)
@@ -68,7 +74,11 @@ or auth always escalate.
 
 ## Discover data surfaces, then filter to the runnable set
 
-Archetype proposes the ideal functions. What OPC can actually reach decides which loops run.
+Archetype proposes the ideal functions. What OPC can actually reach decides which loops run. Keep
+this to a light reachability check (a few calls, after the interview): is there a product app, is
+a CRM recipe present, what integrations are connected. Do not enumerate customers, read source
+artifacts, or sweep memory here; that is the operating loop's job, and doing it now is what makes
+onboarding slow.
 
 - **Product app on Butterbase:** loops query domain state natively (`select_rows`,
   `invoke_function`). Richest case.

@@ -57,7 +57,10 @@ returns 403 on substrate routes. OPC does not depend on any other skill.
 This skill is self-contained: everything it needs is in its own `reference/` folder (which
 travels with the skill) plus that MCP connection. If the companion `substrate` skill happens to
 be installed, its `SKILL.md` is a good deeper reference for the substrate primitives, but OPC
-does not require it. Read the reference files in `reference/` before doing real work:
+does not require it. Read reference files lazily, only what the task needs, never all four up
+front (reading everything up front is slow). For onboarding read `governance-model.md` then
+`onboarding.md`; for an operating run read `operating.md`; read `architecture.md` only for
+runtime or deployment questions.
 
 - `reference/governance-model.md`: the dial, gate vs record, the floor, and exactly which
   substrate capability enforces each guardrail. **Read this first.**
@@ -79,18 +82,27 @@ archetype, propose its default function set, filter that set to what the data su
 actually feed, propose conservative policy defaults and loop cadences, let the founder
 adjust, then write the confirmed config to the substrate.
 
+Onboarding should be fast and feel like a short interview. Reach the founder's questions quickly,
+keep read-backs to a couple of lines, and save deep analysis for the first operating run.
+
 Procedure (full script and exact writes in `reference/onboarding.md`):
 
-1. **Read current state first.** `get_settings` for the dial, `find_entities type=self` and
-   `search_memory` for any existing config. If config already exists, resume or revise rather
-   than overwrite.
-2. **Interview.** About five questions: what the company does and its stage; what it sells and
-   to whom; the refund/credit ceiling; comms authority; the escalation channel. Infer the
-   archetype (SaaS, services SMB, ecommerce) from the first answers rather than asking for it.
-3. **Discover data surfaces.** Detect what is reachable: a Butterbase product app, a CRM
-   recipe, Stripe, an inbox, a calendar. This decides which loops can run. A loop whose data
-   you cannot reach becomes a "connect this to unlock this loop" prompt, never a silently
-   broken loop.
+1. **Quick config check (not a deep sweep).** Three calls only: `get_settings` for the dial,
+   `find_entities type=self` for an existing company record, and `search_memory q="OPC autonomy
+   policy"` for existing config. If both come back empty, this is a fresh onboarding: go straight
+   to the interview. If config already exists, resume or revise rather than overwrite. Do not read
+   customer entities, artifacts, or other memory at this stage.
+2. **Interview.** Ask the founder these about-five questions directly and treat the answers as
+   authoritative, even when some facts could be inferred from substrate data. Onboarding is the
+   founder's input moment; do not pre-fill the company description by mining the substrate. The
+   questions: what the company does and its stage; what it sells and to whom; the refund/credit
+   ceiling; comms authority; the escalation channel. Infer only the archetype (SaaS, services SMB,
+   ecommerce) from the first answers rather than asking for it.
+3. **Light reachability check.** A few calls to see what loops can run: is there a Butterbase
+   product app, is a CRM recipe present, what integrations are connected
+   (`manage_integrations action=list_connected`). Do not enumerate customers, read artifacts, or
+   sweep memory here; surfacing live work is the operating loop's job. A loop whose data you
+   cannot reach becomes a "connect this to unlock this loop" prompt, never a silently broken loop.
 4. **Propose the runnable set.** Show the founder the functions and loops you can actually
    feed, each with a plain language description and a default cadence, plus the conservative
    policy defaults (refund ceiling $20, comms limited to routine customer replies, the
