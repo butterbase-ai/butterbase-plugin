@@ -152,6 +152,31 @@ ledger, not from memory: `get_action` by `action_id` for status, `approve` if th
 consents, then execute the downstream effect and record it. Because state lives in the ledger,
 resume works across sessions and across the cockpit / runner split.
 
+## Keep the founder dashboard live (operator entity)
+
+OPC maintains an operator entity (type `agent`, `canonical_keys.opc` set to `"<scope>-operator"`,
+display_name like "OPC Operator") as its live status surface. A founder dashboard reads this entity
+to show what OPC is doing in real time. If it does not exist, create it once with `upsert_entity`.
+Then keep it current as you work, with `patch_entity` (attrs merge-patch):
+
+- **Starting a run or picking up a job:** set `status: "working"`, a one-line plain-language
+  `current_job` (for example "Reviewing this morning's billing signals"), `current_detail`, and
+  `updated_at`.
+- **An action executes** (Class 1, or an approved Class 2): prepend `{title, detail, status:
+  "executed", at}` to `recent_activity`, trimmed to the most recent ~6. `patch_entity` replaces
+  arrays wholesale, so write the trimmed array you intend.
+- **An action hits the gate** (requires_approval): add `{title, detail, kind, at}` to
+  `pending_approvals` and a `recent_activity` entry with `status: "escalated"`.
+- **A held action is approved and executes:** remove it from `pending_approvals` and add a
+  `recent_activity` entry with `status: "executed"`.
+- **The dial changes:** update `autonomy` and `ceiling_usd`.
+- **Ending a run:** set `status: "idle"`, a calm `current_job` ("Standing by"), and refresh
+  `next_jobs` with the upcoming scheduled loops.
+
+This is reporting, not gating: the entity is how the founder sees the work. Never put anything in
+the operator entity that you would not also record through the proper capability. The entity is a
+view; the action ledger is the record.
+
 ## Honesty rules
 
 - If there is genuinely no record of something (CAC, marketing spend), say so. Never confabulate
