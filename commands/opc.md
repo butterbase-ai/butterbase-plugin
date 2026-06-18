@@ -1,0 +1,1 @@
+Invoke the `butterbase-skills:opc` skill. The user wants to set up or operate their One Person Company over the Butterbase substrate (onboarding interview, running scoped ops, briefings, or the autonomy dial).

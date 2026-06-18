@@ -1,0 +1,114 @@
+# OPC operating: one scoped run
+
+Phase B runs the company within the structure Phase A established. Each run is a discrete scoped
+task that re-grounds, does its defined work, and ends. Invoked in the cockpit as "run today's
+ops" or as a single named loop. In production the hosted runner fires the same logic on the
+loops' cadence under the scoped OPC identity.
+
+## 1. Re-ground (every run, no exceptions)
+
+Read live config from the substrate. Never use a value cached from a prior run.
+
+1. `get_settings`: the current dial (`yolo_mode`).
+2. `search_memory q="OPC autonomy policy"`: the ceiling, comms authority, escalation channel,
+   and the floor list.
+3. `search_memory` / `list_memory` for the company's foundational memory and current priorities.
+4. `list_rules`: which loops are registered and due.
+
+If the autonomy policy is missing, stop and tell the founder to run onboarding. Do not invent
+defaults at run time.
+
+## 2. Gather (per due loop)
+
+For each due loop, query its state through the reachable surface:
+
+- Customer health: `find_entities type=company` filtered to `attrs.status = at_risk`, plus the
+  why (usage drop, unanswered email, broken commitment) from `search_memory` by customer name.
+- Commitments: `list_memory kinds=commitments` for outstanding promises and due dates.
+- Billing: the billing surface (product app, Stripe via integration, or recorded disputes as
+  source artifacts).
+- Support: unanswered threads from the inbox integration or recorded artifacts.
+
+Substrate `search_memory` is strict keyword FTS, not semantic. Search by concrete terms that
+appear in the records (customer name, "double-charged", "calendar sync", "referral"), not by
+abstract phrases like "at risk".
+
+## 3. Decide and split every candidate action by risk class
+
+This split is the core safety mechanic. Classify before acting.
+
+### Class 1: reversible, low stakes
+
+One reply to one customer, recording a decision or learning, patching a customer's status.
+Call the capability and let the substrate record it. No gate. These are the actions that should
+flow freely so the founder is not approving trivia.
+
+### Class 2: high stakes, irreversible, over a ceiling, or any floor category
+
+A full-list campaign, a public post, a refund over the ceiling, a price change, a data deletion,
+anything touching payment methods or keys. Run the policy check BEFORE execution by proposing the
+action as a structured call with legible params. The substrate returns:
+
+- allow: execute.
+- hold (`requires_approval`): pause THIS action with its `action_id`, notify the founder on the
+  escalation channel with the action and its params, and resume only on `approve`. Keep the
+  other loops moving; do not block the whole run on one held action.
+- deny (`rejected`): do not execute. Record why and surface it in the briefing.
+
+High stakes actions must be structured so the gate can see the params it needs (audience scope,
+refund amount). Never propose a high stakes action as an opaque blob; the gate can only hold what
+it can see.
+
+## 4. The refund / value-grant pattern (worked example)
+
+This is the canonical operating moment.
+
+1. A loop finds a refund situation (a disputed duplicate charge). Read the amount from the
+   source artifact's attrs.
+2. Compare the amount to the authoritative ceiling read in step 1 (re-ground). Do not use a
+   remembered ceiling.
+3. **Over ceiling:** propose the apology/refund email as `send_email_draft`. The substrate
+   returns `requires_approval` (it always gates for an agent proposer). Nothing fires. Notify
+   the founder. On `approve`: execute the refund through its function, send the email through the
+   integration, record the refund to the ledger with `record_decision` (charge id + refund id),
+   and update the dispute artifact to resolved.
+4. **Under ceiling (dial raised):** the same refund clears without an ask, because the
+   authoritative ceiling OPC just re-read is now higher. Execute, then record to the ledger.
+
+Never raise the ceiling to clear your own action. The only path to a higher ceiling is a
+`supersede_decision` the founder approves.
+
+## 5. Record
+
+Every executed action lands in the action ledger through the substrate. The ledger is both the
+audit trail and the track record that earns the next dial raise. Do not treat recording as a
+substitute for gating: recording happens after, gating happens before.
+
+## 6. Brief
+
+End the run with a short briefing. Compact, scannable, honest:
+
+- **Ran:** which loops fired.
+- **Acted:** what cleared and executed (with ledger references).
+- **Waiting on you:** held actions, each with its `action_id`, the action, and its params.
+- **Escalated / denied:** what hit the gate or the floor and why.
+- **Changed:** notable state changes (a customer moved to at-risk, a commitment came due).
+
+The briefing is how the founder keeps oversight. Surface the track record so the founder can pull
+more autonomy when they have seen enough good runs. Never suggest reducing their oversight; if
+they ask to raise the dial, walk them through the gated `supersede_decision`, do not push it.
+
+## 7. Resume
+
+When a held action is approved later (possibly in a different cockpit session), resume from the
+ledger, not from memory: `get_action` by `action_id` for status, `approve` if the founder
+consents, then execute the downstream effect and record it. Because state lives in the ledger,
+resume works across sessions and across the cockpit / runner split.
+
+## Honesty rules
+
+- If there is genuinely no record of something (CAC, marketing spend), say so. Never confabulate
+  company state.
+- If a loop's data surface is unreachable, report the gap; do not silently produce an empty or
+  guessed result.
+- Report outcomes faithfully: what ran, what was skipped, what is waiting.
