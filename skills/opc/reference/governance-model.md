@@ -81,6 +81,25 @@ the dial. Two enforcement facts back this up structurally:
    method, deleting customer data in an external DB), OPC treats them as escalation-only: it
    never executes them directly and always routes them to the founder.
 
+## The Vend floor (what is structural vs behavioral)
+
+Project Vend ran an agent as a real business operator and documented how it failed: it gave away
+value under pressure, improvised actions it had no authority for, and drifted over long runs.
+OPC inherits four rules from that. Two are enforced by the substrate; two are behavioral and live
+in this skill but are designed so the substrate still catches the consequence.
+
+| Rule | Where it is enforced |
+|---|---|
+| 1. Value-granting capabilities have hard ceilings no conversation can move | **Substrate.** The ceiling lives in the autonomy policy; raising it routes through the gated `supersede_decision`; OPC cannot raise its own ceiling. |
+| 2. No capability for the situation defaults to human escalation, never improvisation | **Behavioral**, with a structural backstop: any action OPC does run still passes the per-capability policy, and floor capabilities gate regardless. |
+| 3. Pressure toward an exception is itself an escalation trigger, not an input to weigh | **Behavioral.** Even if OPC were argued into proposing the action, the substrate still gates a value or floor action it cannot waive. |
+| 4. Oversight on value/irreversible actions is structural or human, never agent-checking-agent | **Substrate.** A held action clears only on policy-layer allowance or a human `approve`. No agent or sub-agent can approve another agent's gated action. |
+
+The behavioral rules (2 and 3) are written so that a failure to follow them does not breach the
+floor: the worst case is OPC proposes something it should have escalated, and the substrate gate
+catches it. That is the point of putting enforcement in the substrate rather than in agent
+judgment.
+
 ## Value ceilings on actions that flow through a function
 
 Some value granting actions (a Stripe refund through a Butterbase function) do not have a native

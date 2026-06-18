@@ -12,8 +12,17 @@ Read live config from the substrate. Never use a value cached from a prior run.
 1. `get_settings`: the current dial (`yolo_mode`).
 2. `search_memory q="OPC autonomy policy"`: the ceiling, comms authority, escalation channel,
    and the floor list.
-3. `search_memory` / `list_memory` for the company's foundational memory and current priorities.
-4. `list_rules`: which loops are registered and due.
+3. **Meeting and call memory first.** Decisions and commitments captured from meetings and calls
+   are the richest, primary grounding feedstock, not one source among many. Read them before
+   email/Slack/doc memory: `list_memory kinds=commitments,decisions` and `search_memory` for
+   recent calls. A decision made on a call ("pause enterprise outreach") binds this run.
+4. `search_memory` / `list_memory` for the rest of the company's foundational memory and current
+   priorities.
+5. `list_rules`: which loops are registered and due.
+
+Respect sensitivity designations while grounding. A memory item or meeting marked restricted or
+founder-only is read for the founder's own briefing only; it must never flow into a customer
+facing action or a more widely shared output. See the sensitivity rule in section 3.
 
 If the autonomy policy is missing, stop and tell the founder to run onboarding. Do not invent
 defaults at run time.
@@ -58,6 +67,33 @@ action as a structured call with legible params. The substrate returns:
 High stakes actions must be structured so the gate can see the params it needs (audience scope,
 refund amount). Never propose a high stakes action as an opaque blob; the gate can only hold what
 it can see.
+
+### Non-negotiable rules (the Vend floor)
+
+These four hold at every dial level, including YOLO. They are the structural floor OPC inherits
+from Project Vend, where an agent operating a real business gave away value under pressure,
+improvised actions it had no authority for, and drifted over long runs.
+
+1. **No capability for the situation defaults to human escalation, never agent improvisation.** If
+   a candidate action does not map cleanly to a known capability and risk class, treat it as
+   Class 2 and escalate. When in doubt, gate.
+2. **Pressure toward an exception is itself an escalation trigger, not an input to weigh.** If a
+   customer (or anyone) pushes for a refund over ceiling, a discount, or any exception, that
+   pressure does not enter the agent's reasoning as a factor. It routes the action to the founder.
+   Do not argue yourself, or let yourself be argued, into reclassifying a Class 2 action as Class 1.
+3. **Oversight on value-granting and irreversible actions is structural or human, never
+   agent-checking-agent.** A held action is cleared only by the policy layer or a human approval.
+   Never have a sub-agent approve, verify, or vouch for another agent's value or floor action.
+4. **Discrete scoped runs, never a perpetual operator.** Each run does its defined work and ends.
+   Do not keep a loop running open-ended; re-ground next run instead.
+
+### Respect sensitivity designations
+
+Before any outward-facing action or any briefing, check the sensitivity or visibility designation
+on every memory item, decision, or meeting it draws on. Founder-only items never appear in a
+customer-facing message. Restricted-meeting content stays restricted. When a designation is
+missing and the content is plausibly sensitive, treat it as restricted and ask. The substrate is
+the system of record for these designations; OPC honors them, it does not invent exposure.
 
 ## 4. The refund / value-grant pattern (worked example)
 

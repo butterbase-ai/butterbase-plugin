@@ -55,6 +55,13 @@ cage.
   briefing.
 - Default ceiling: $20 refund/credit. Comms: routine buyer replies only.
 
+**Every archetype also gets a commitment follow-through loop.** Promises made to customers and
+partners (often captured from a meeting or call) are first-class company state, and acting on
+them is where the institutional memory pays off. This loop watches outstanding commitments and
+their due dates (`list_memory kinds=commitments`), and as each comes due it acts within ceilings
+or escalates. It is the loop that closes "we promised them X" into "we delivered X." Default
+cadence: daily. Propose it for every company.
+
 The conservative floor is identical across archetypes and is not adjustable during onboarding:
 payment methods, data deletion, price changes, signing commitments, and anything touching keys
 or auth always escalate.
@@ -70,6 +77,12 @@ Archetype proposes the ideal functions. What OPC can actually reach decides whic
   with `manage_integrations action=list_connected`.
 - **CRM recipe present:** customer and at-risk loops read the same substrate the CRM writes, so
   there is no handoff to build. CRM-backed loops are offered only when the CRM is present.
+- **Meeting and call capture (opt-in, never default):** voice and conversation are the richest
+  feedstock for institutional memory, so meeting capture strongly upgrades every loop's grounding.
+  But it is the founder's deliberate choice, not a default. Recording carries real consent and
+  legal weight (two-party-consent states, GDPR, employee comfort). Offer it as a connection the
+  company turns on; never enable recording by default. The substrate holds the structured,
+  governed memory; the company owns the capture decision.
 
 For every proposed loop, confirm its data source is reachable. A loop whose data you cannot
 reach becomes a "connect this to unlock this loop" prompt. Name the gap. Never register a loop

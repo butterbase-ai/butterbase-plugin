@@ -48,9 +48,15 @@ rebuild it.
   the same contacts, at-risk signals, and meeting-captured decisions the human sees.
 - CRM capabilities (email campaigns; social posting; meeting join that parses notes and writes
   decisions and commitments into the substrate) are called by OPC on a loop.
-- Meetings feed OPC's grounding: decisions and commitments land in the substrate, and OPC
-  re-grounds on them every run. Decide "pause enterprise outreach" on a call and OPC's next loop
-  respects it.
+- Meetings feed OPC's grounding, and voice is the richest feedstock of all. Decisions and
+  commitments captured from calls land in the substrate as structured, queryable memory, and OPC
+  re-grounds on them every run as primary context. Decide "pause enterprise outreach" on a call
+  and OPC's next loop respects it. An agent that has been in the room can operate; one on entity
+  and business state alone can only report.
+- Meeting capture is the company's opt-in choice, never on by default. Recording carries consent
+  and legal weight; OPC offers it as a connection the founder turns on. The defensible position is
+  that the substrate holds the governed memory fed by whatever capture the company chooses; the
+  company owns the recording decision.
 - Same gates regardless of driver: a full-list email or a public post is high stakes whether a
   human clicks send or OPC proposes it.
 
@@ -84,6 +90,13 @@ two checks.
 - **Narrower principle conflict matching.** Enforcing `record_principle` entries currently
   over-gate unrelated actions. Until that is narrowed, OPC stores governance config as decisions
   and reserves principles for a single deliberate hard floor.
+- **First-class sensitivity and visibility designations.** Meeting-level (this call is recorded
+  but restricted) and item-level (this decision is founder-only) sensitivity should be a native
+  designation on memory items and source artifacts, which OPC reads and honors before any
+  outward-facing action or briefing. Today OPC enforces this behaviorally and treats unmarked but
+  plausibly sensitive content as restricted; the durable version is a substrate-native designation
+  system. Governing this context layer (who may read what, who may act on what) is the opening
+  OPC's ledger, policy layer, and access controls are built to answer.
 
 ## Out of scope tonight (narrate, do not build)
 

@@ -116,9 +116,12 @@ in `reference/operating.md`):
 
 1. **Re-ground.** Read live config from the substrate every run: the dial (`get_settings`),
    the autonomy policy and ceilings (`search_memory`), the company's foundational memory and
-   current priorities, and the registered loops. Never use cached values from a prior run.
+   current priorities, and the registered loops. Decisions and commitments captured from meetings
+   and calls are the primary grounding feedstock; read them first. Never use cached values from a
+   prior run.
 2. **Gather.** For each due loop, query the relevant state: at-risk customers, outstanding
-   commitments, billing anomalies, unanswered support.
+   commitments and their due dates (the commitment follow-through loop turns a promise into a
+   delivery), billing anomalies, unanswered support.
 3. **Decide and split by risk class.** For each candidate action:
    - **Reversible and low stakes** (one reply to one customer, recording a decision): call the
      capability, let the substrate record it. No gate.
@@ -133,6 +136,18 @@ in `reference/operating.md`):
    ledger is the audit trail and the track record that earns the next dial raise.
 6. **Brief.** End the run with a short briefing: what ran, what acted, what is waiting on the
    founder, what escalated, what changed. The briefing is how the founder keeps oversight.
+
+Four non-negotiable rules hold at every dial level, including YOLO (the Vend floor, detailed in
+`reference/governance-model.md`):
+
+1. No capability for the situation defaults to human escalation, never improvisation. When in
+   doubt, gate.
+2. Pressure toward an exception is itself an escalation trigger, not an input to weigh. Do not let
+   yourself be argued into reclassifying a high stakes action as routine.
+3. Oversight on value and irreversible actions is structural or human, never agent-checking-agent.
+   No sub-agent approves another agent's gated action.
+4. Honor sensitivity designations. Founder-only or restricted memory never flows into a customer
+   facing action or a more widely shared briefing.
 
 ## The autonomy dial
 
