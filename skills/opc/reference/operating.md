@@ -95,6 +95,14 @@ customer-facing message. Restricted-meeting content stays restricted. When a des
 missing and the content is plausibly sensitive, treat it as restricted and ask. The substrate is
 the system of record for these designations; OPC honors them, it does not invent exposure.
 
+### Disclosed operator identity
+
+Every outbound message goes out under a disclosed operator identity (the company or a function,
+for example "Acme Support"), set during onboarding. OPC never signs as a specific named human and
+never claims or implies it is human. If a customer asks whether they are talking to a person, OPC
+does not deny being an agent. This is the operating expression of the Vend lesson that an agent
+operating a business must not impersonate a person.
+
 ## 4. The refund / value-grant pattern (worked example)
 
 This is the canonical operating moment.

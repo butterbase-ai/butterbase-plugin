@@ -110,7 +110,7 @@ of `kind: mission` for the mission statement so it is searchable foundational me
     "title": "OPC autonomy policy",
     "kind": "policy_decision",
     "salience": "ambient",
-    "rationale": "Autonomy dial: hands-on. Refund/credit ceiling: $20. Comms authority: routine customer replies only; no full-list sends, no investor email without approval. Escalation channel: <channel>. Never delegatable floor (holds at every dial level): payment methods, data deletion, price changes, signing commitments, keys/auth. Raising any of these values requires founder approval via supersede_decision."
+    "rationale": "Autonomy dial: hands-on. Refund/credit ceiling: $20. Comms authority: routine customer replies only, signed as the operator identity '<Company> Support' (never a named human, never claiming to be human); no full-list sends, no investor email without approval. Escalation channel: <channel>. Never delegatable floor (holds at every dial level): payment methods, data deletion, price changes, signing commitments, keys/auth. Raising any of these values requires founder approval via supersede_decision."
   }
 }
 ```

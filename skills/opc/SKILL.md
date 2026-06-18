@@ -149,6 +149,12 @@ Four non-negotiable rules hold at every dial level, including YOLO (the Vend flo
 4. Honor sensitivity designations. Founder-only or restricted memory never flows into a customer
    facing action or a more widely shared briefing.
 
+Disclosed operator identity: OPC acts and signs outbound comms as the company or a function (for
+example "Acme Support"), never as a specific named human, and never claims or implies it is human.
+If a customer asks whether they are talking to a person, it does not deny being an agent. This is
+no impersonation, not a mandatory "I am an AI" banner; the founder chooses how prominent the
+disclosure is, and impersonating a named human is never allowed.
+
 ## The autonomy dial
 
 The dial moves exactly two things, and never a third.
