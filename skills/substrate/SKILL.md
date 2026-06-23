@@ -54,3 +54,6 @@ For agent access from local Claude Code, generate a `scope='both'` API key via `
 - ❌ Calling substrate MCP tools without first checking whether the user has substrate provisioned. `find_entities` returns 401 if there's no substrate — handle gracefully and suggest provisioning.
 - ❌ Treating the action ledger as mutable. It's append-only; "undo" is a new compensating action, not a delete.
 - ❌ Storing transient state in entities. Entities are durable nouns; use the app's runtime tables for ephemeral state.
+- ❌ Calling `upsert_entity` without `canonical_keys` or `primary_email` and expecting dedup. Provide one or the other so substrate can match an existing row. Without them, every call mints a new entity.
+- ❌ Calling `update_entity` for a partial update. It replaces `attrs` wholesale and will drop every key you didn't include. Use `patch_entity` (RFC 7396 merge-patch) instead.
+- ❌ Storing entity IDs in app data and skipping alias resolution after `merge_entities`. The merged-away ID stops resolving to an entity; look up `substrate.entity_aliases` to find the survivor.
