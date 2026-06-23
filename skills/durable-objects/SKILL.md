@@ -37,7 +37,7 @@ A class is shared code; an **instance** is a unique key (`/lobby`, `/general`, `
 - ≤ 5 DO classes per app (v1).
 - **No service bindings yet.** Functions reach DOs over HTTP, not via env binding.
 - `state.storage` keys/values capped at 128 KB. Larger blobs → Butterbase Storage.
-- **WebSockets need `access_mode: "public"`** because browsers can't send custom headers on WS upgrade. Validate auth tokens inside `fetch()` instead.
+- **Browser WebSockets need `access_mode: "public"`.** Browsers can't set custom headers on WS upgrade, and the `_do/` dispatcher reads auth *only* from `Authorization` — `?token=` and `Sec-WebSocket-Protocol` are silently ignored at the dispatcher (unlike the `/realtime` route, which does accept `?token=`). Set the DO public, then read the token from `?token=` (or `Sec-WebSocket-Protocol`) inside `fetch()` and verify it yourself before accepting the upgrade. Server-to-server callers can still use `authenticated`/`service_key`.
 
 ---
 
