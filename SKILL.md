@@ -34,15 +34,15 @@ claude plugin install butterbase
 
 ## Setup
 
-1. **Get an API key** — Sign up at [butterbase.ai](https://butterbase.ai) or generate one with the CLI:
+Sign-in is OAuth — no API key copy-paste needed.
+
+1. **Sign up** at [butterbase.ai](https://butterbase.ai).
+2. **Install the MCP server across every detected client:**
    ```bash
-   butterbase keys generate
+   npx @butterbase/cli mcp install
    ```
-2. **Export it:**
-   ```bash
-   export BUTTERBASE_API_KEY=bb_sk_your_key_here
-   ```
-3. **Start Claude Code.** The plugin auto-loads.
+   The cli walks Claude Code, Cursor, VS Code, JetBrains, Codex, Gemini CLI, and the rest, and prints per-client OAuth hints.
+3. **Trigger OAuth once per client.** In Claude Code: restart, then run `/mcp` (or `claude mcp login butterbase`).
 
 ## Headline skills
 
@@ -66,19 +66,9 @@ See [`CLAUDE.md`](./CLAUDE.md) and the [`skills/`](./skills/) directory for the 
 
 ## Supported AI assistants
 
-- **Claude Code** (primary) — installed via the plugin marketplace command above
-- **Claude Desktop** — point at the MCP endpoint manually via `claude_desktop_config.json`:
-  ```json
-  {
-    "mcpServers": {
-      "butterbase": {
-        "url": "https://api.butterbase.ai/mcp",
-        "headers": { "Authorization": "Bearer ${BUTTERBASE_API_KEY}" }
-      }
-    }
-  }
-  ```
-- Any other MCP-capable client can connect using the same URL + bearer auth, or run the MCP server locally via [`@butterbase/mcp`](https://www.npmjs.com/package/@butterbase/mcp).
+- **Claude Code** (primary) — installed via the plugin marketplace command above; `npx @butterbase/cli mcp install` also covers it.
+- **Claude Desktop / Cursor / VS Code / JetBrains / Codex / Gemini CLI / others** — `npx @butterbase/cli mcp install` writes the right config for each, then a single `/mcp` (or the client's equivalent) launches the OAuth flow in your browser.
+- Any other MCP-capable client can connect to `https://api.butterbase.ai/mcp` directly — the server advertises OAuth 2.1 via the standard `.well-known/oauth-protected-resource` metadata. Or run the MCP server locally via [`@butterbase/mcp`](https://www.npmjs.com/package/@butterbase/mcp).
 
 ## Related
 

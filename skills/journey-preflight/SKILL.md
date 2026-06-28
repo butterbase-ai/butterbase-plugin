@@ -16,11 +16,11 @@ Gate that ensures the user can actually talk to the Butterbase platform before a
 
 For each check, write a one-line result to `03-preflight.md` (`<check> ✓/✗ <note>`). Ask the user to fix any ✗ before continuing — do not auto-skip failures.
 
-1. **Butterbase account.** Call `mcp__butterbase__list_regions` (cheapest call). Success → ✓. Auth error → ✗ with `"Sign up at https://butterbase.ai and create an API key, then export BUTTERBASE_API_KEY."`. If MCP tool is not visible at all, jump to step 2.
+1. **Butterbase account.** Call `mcp__butterbase__list_regions` (cheapest call). Success → ✓. Auth error → ✗ with `"Sign up at https://butterbase.ai, then run npx @butterbase/cli mcp install and complete the OAuth flow in your client (e.g. /mcp in Claude Code)."`. If MCP tool is not visible at all, jump to step 2.
 
-2. **MCP server connected.** Check whether `mcp__butterbase__*` tools are listed in the agent's available tools. Absent → ✗ with `"Install/enable the Butterbase MCP server. See https://butterbase.ai/docs/mcp."`. Present → ✓.
+2. **MCP server connected.** Check whether `mcp__butterbase__*` tools are listed in the agent's available tools. Absent → ✗ with `"Install the Butterbase MCP server: npx @butterbase/cli mcp install. See https://butterbase.ai/docs/mcp."`. Present → ✓.
 
-3. **API key set.** Run `echo "${BUTTERBASE_API_KEY:-MISSING}"` via Bash. If `MISSING` or empty → ✗ with `"Export BUTTERBASE_API_KEY (starts with bb_sk_) in your shell or .env."`. Otherwise → ✓ (do not echo the key value to the user).
+3. **MCP OAuth complete.** Auth for `mcp__butterbase__*` calls is OAuth, not an env var — step 1 already proved it works if `list_regions` succeeded. If step 1 failed with auth error, retry after the user runs `/mcp` (or `claude mcp login butterbase`) and completes browser consent. `BUTTERBASE_API_KEY` (`bb_sk_…`) is still relevant for **runtime app code** (functions, server-side `@butterbase/sdk`) — check separately at deploy time, not here.
 
 4. **App provisioned.** Read `00-state.md` front-matter for `app_id`.
    - Non-null and `mcp__butterbase__manage_app` (action `get_config`) succeeds → ✓.

@@ -12,17 +12,19 @@ claude plugin add @butterbase/skills
 
 ## Setup
 
-1. **Get an API key** — Sign up at [butterbase.ai](https://butterbase.ai) or generate one with the CLI:
-   ```bash
-   butterbase keys generate
-   ```
+Sign-in is OAuth — no API key copy-paste needed.
 
-2. **Set the environment variable:**
-   ```bash
-   export BUTTERBASE_API_KEY=bb_sk_your_key_here
-   ```
+1. **Sign up** at [butterbase.ai](https://butterbase.ai).
 
-3. **Start Claude Code** — The plugin auto-configures the Butterbase MCP server connection. All 42+ tools are available immediately.
+2. **Install the MCP server across every detected client** with one command:
+   ```bash
+   npx @butterbase/cli mcp install
+   ```
+   This walks Claude Code, Cursor, VS Code, JetBrains, Codex, Gemini CLI, and the rest, and prints per-client OAuth follow-up hints.
+
+3. **Trigger OAuth once per client.** In Claude Code: restart, then run `/mcp` (or `claude mcp login butterbase`). The cli's output covers every other client.
+
+The plugin auto-loads its skills and CLAUDE.md context as soon as Claude Code starts. All 42+ tools available immediately after consent.
 
 ## Available Skills
 
